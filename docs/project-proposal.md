@@ -1,17 +1,18 @@
-# KIS4 Project Proposal  
-## AI-Assisted Software Engineering  
-### Project Title  
+# KIS4 Project Proposal
+## AI-Assisted Software Engineering
+### Project Title
 **Emergent Rule Evolution Game with Autonomous AI Agents**
+
+![title-pic](KI-Uno.png)
 
 ---
 
 # Team Members
 
-| Name | Responsibilities |
-|---|---|
-| Student 1 | Agent architecture, backend implementation |
-| Student 2 | Game logic, communication protocol |
-| Student 3 | Evaluation, documentation, testing |
+| Name                  |
+|-----------------------|
+| Daniel Huber          |
+| Maximilian Starlinger |
 
 ---
 
@@ -99,9 +100,8 @@ Each agent:
 - optionally changes rules
 
 Possible implementation:
-- OpenAI API
-- Gemini API
 - local LLMs using Ollama
+- openRouter.ai
 
 ### 4. Shared Context Layer
 Maintains:
@@ -130,12 +130,7 @@ The project itself studies AI agents, but AI tools will also support the develop
 
 ## AI Tools Used
 
-| Tool | Usage |
-|---|---|
-| ChatGPT | architecture discussion, prompt engineering, debugging |
-| GitHub Copilot | code generation and autocomplete |
-| Gemini | alternative code suggestions and documentation |
-| AI image/diagram tools | architecture diagrams |
+ - Codex: architecture discussion, coding, prompt engineering, debugging
 
 ---
 
@@ -162,11 +157,6 @@ The project will be considered successful if:
 - Rule changes affect future gameplay
 - The system remains stable during multiple rounds
 
-Additional evaluation:
-- compare different prompting strategies
-- analyze emergent gameplay behavior
-- analyze communication consistency between agents
-
 ---
 
 # Example Gameplay Flow
@@ -184,41 +174,17 @@ Additional evaluation:
 
 # Preliminary Technology Stack
 
-| Category | Technology |
-|---|---|
-| Programming Language | Python |
-| AI APIs | OpenAI / Gemini / Ollama |
-| Backend | Python FastAPI or Flask |
-| Communication Format | JSON |
-| Version Control | Git + GitHub |
-| Containerization | Docker |
-| Development Environment | VS Code |
+| Category             | Technology     |
+|----------------------|----------------|
+| ProgrammingLanguage  | Python         |
+| AI APIs              | Ollama         |
+| Backend              | Python FastAPI |
+| Communication Format | JSON           |
+| Version Control      | Git + GitHub   |
+| Containerization     | Docker         |
 
 ---
 
 # Development / Architecture Diagram
 
-```text
-+-------------------+
-|   Shared Context  |
-|  Game State JSON  |
-+---------+---------+
-          |
-          v
-+---------+---------+
-|     Game Engine   |
-+---------+---------+
-          |
-  -------------------
-  |                 |
-  v                 v
-+------+         +------+
-|AgentA| <-----> |AgentB|
-+------+         +------+
-  |                 |
-  -------------------
-          |
-          v
-+-------------------+
-|    Rule Engine    |
-+-------------------+
+![structure](KI-Agenten-Struktur.png)
