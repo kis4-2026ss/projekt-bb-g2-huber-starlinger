@@ -44,7 +44,139 @@ Ein Agent entsteht erst, wenn man das Modell in eine Umgebung einbettet:
 
 Das LLM ist also das "Denkmodul", aber der Agent ist das gesamte System aus Modell, Code, Kontext, Regeln und Aktionen.
 
-## 4. Vorgeschlagene Architektur fuer das Projekt
+## 4. Wie funktioniert Kontext bei KI-Agenten?
+
+Ein wichtiger Punkt: Ein LLM behaelt normalerweise nicht automatisch alles dauerhaft im Kopf. Bei jedem Modellaufruf bekommt das Modell einen Input, also den Prompt plus eventuell bisherige Nachrichten. Daraus erzeugt es eine Antwort. Was nicht im Prompt, im Kontextfenster oder in externem Speicher steht, kann das Modell beim naechsten Aufruf nicht sicher wissen.
+
+Man kann sich das grob so vorstellen:
+
+```text
+Agent-Code
+  liest Regeln
+  liest Spielstand
+  liest History/Memory
+  baut Prompt
+        |
+        v
+LLM
+  verarbeitet nur den aktuellen Kontext
+  erzeugt Antwort
+        |
+        v
+Agent-Code
+  validiert Antwort
+  speichert Ergebnis
+```
+
+### 4.1 Hat ein LLM RAM?
+
+Nicht im klassischen Sinn. Ein LLM hat waehrend eines einzelnen Aufrufs einen Arbeitsbereich, das sogenannte Kontextfenster. In diesem Kontextfenster stehen Tokens aus dem aktuellen Prompt, zum Beispiel:
+
+- System-Anweisung
+- Spielregeln
+- aktueller Spielstand
+- bisherige Zuege
+- Memory-Zusammenfassung
+- Frage oder Aufgabe
+
+Das Modell nutzt diesen Kontext, um die naechsten Tokens zu berechnen. Nach dem Aufruf ist dieser interne Arbeitszustand fuer normale Anwendungen nicht dauerhaft gespeichert.
+
+### 4.2 Was bleibt zwischen Prompts erhalten?
+
+Es gibt drei verschiedene Arten von "Gedaechtnis":
+
+| Art | Was bedeutet das? | Beispiel |
+|---|---|---|
+| Modellgewichte | Wissen, das beim Training im Modell steckt. | Sprache, allgemeines Wissen, Muster. |
+| Kontextfenster | Informationen im aktuellen Prompt. | Regeln und Spielstand fuer diesen Zug. |
+| Externer Speicher | Daten, die der Agent-Code speichert und spaeter wieder laedt. | `history.jsonl`, `memory.json`, Datenbank. |
+
+Wenn ein Agent sich an fruehere Runden erinnern soll, muss der Agent-Code diese Informationen speichern und beim naechsten Prompt wieder einfuegen.
+
+### 4.3 Laden Agenten den Kontext nach jedem Prompt neu?
+
+In vielen lokalen Agent-Systemen: ja. Der Agent baut fuer jeden Zug einen neuen Prompt. Dafuer liest er erneut:
+
+1. aktuelle Regeln
+2. aktuellen Spielstand
+3. relevante Historie
+4. eigene Notizen oder Memory
+5. feste Agent-Anweisungen
+
+Dann fragt er das Modell erneut. Das ist normal und sogar gut, weil der Agent dadurch immer mit dem aktuellen Zustand arbeitet.
+
+### 4.4 Warum wirkt ChatGPT dann so, als wuerde es sich erinnern?
+
+In einem Chat werden die bisherigen Nachrichten meistens wieder an das Modell mitgegeben. Das Modell sieht also nicht nur deine letzte Frage, sondern auch Teile des bisherigen Verlaufs. Dadurch wirkt es so, als haette es ein dauerhaftes Kurzzeitgedaechtnis.
+
+Technisch ist es eher so:
+
+```text
+Neue Antwort = Modell(Systemnachricht + bisheriger Chatverlauf + neue Frage)
+```
+
+Wenn der Verlauf zu lang wird, muss das System kuerzen, zusammenfassen oder alte Teile weglassen. Dann kann es passieren, dass Details verloren gehen.
+
+### 4.5 Was bedeutet das fuer euer Spielprojekt?
+
+Fuer euren Agenten sollte nicht das Modell selbst die einzige Erinnerung sein. Besser ist:
+
+- Regeln immer aus `rules.json` laden
+- Spielstand immer aus `game_state.json` oder vom Server bekommen
+- Zuege in `history.jsonl` speichern
+- wichtige Erkenntnisse in `memory.json` zusammenfassen
+- nur relevante Historie in den Prompt packen
+
+Beispiel fuer `memory.json`:
+
+```json
+{
+  "agent_id": "agent_a",
+  "strategy_notes": [
+    "Opponent often chooses maximum points.",
+    "Avoid rule changes that help both players equally.",
+    "Invalid moves are worse than conservative legal moves."
+  ],
+  "last_updated_after_game": 4
+}
+```
+
+Der Agent kann diese Datei vor jedem Zug laden und in den Prompt einfuegen. Dadurch entsteht praktisches Agent-Gedaechtnis.
+
+### 4.6 Kontextfenster vs. echter Speicher
+
+Das Kontextfenster ist begrenzt. Je nach Modell kann es nur eine bestimmte Menge Text gleichzeitig verarbeiten. Wenn ihr die komplette Spielhistorie nach 200 Runden in den Prompt kopiert, wird es irgendwann zu lang, teuer oder langsam.
+
+Deshalb ist eine gute Agent-Architektur meistens so aufgebaut:
+
+```text
+Komplette History bleibt in Dateien/Logs.
+Nur die relevanten letzten Zuege kommen in den Prompt.
+Langfristige Erkenntnisse werden als kurze Memory-Zusammenfassung gespeichert.
+```
+
+Fuer euer Spiel waere ein sinnvoller Prompt-Kontext:
+
+- vollstaendige aktuelle Regeln
+- vollstaendiger aktueller Spielstand
+- die letzten 5 bis 10 Zuege
+- kurze Memory-Zusammenfassung
+- klares JSON-Ausgabeformat
+
+### 4.7 Kurz gesagt
+
+Ein KI-Agent "denkt" nicht dauerhaft im Hintergrund, ausser ihr programmiert genau das. Er wird typischerweise immer wieder aufgerufen:
+
+1. Kontext sammeln
+2. Prompt bauen
+3. Modell fragen
+4. Antwort pruefen
+5. Aktion ausfuehren
+6. Ergebnis speichern
+
+Das wiederholt sich bei jedem Zug. Das eigentliche Langzeitgedaechtnis entsteht durch euren Agent-Code, nicht automatisch durch das LLM.
+
+## 5. Vorgeschlagene Architektur fuer das Projekt
 
 Eine einfache lokale Architektur kann so aussehen:
 
@@ -79,7 +211,7 @@ Shared-Ordner
 | Rule Engine | Teil des Game Servers, der prueft, ob Aktionen mit den Regeln vereinbar sind. |
 | Logging | Speichert Prompts, Antworten, Zuege und Regelaenderungen fuer die spaetere Analyse. |
 
-## 5. Warum ein zentraler Game Server sinnvoll ist
+## 6. Warum ein zentraler Game Server sinnvoll ist
 
 Man koennte beide Agenten direkt miteinander sprechen lassen. Fuer den Anfang ist ein zentraler Game Server aber einfacher und stabiler.
 
@@ -93,7 +225,7 @@ Der Game Server ist die einzige Quelle der Wahrheit. Er entscheidet:
 
 Dadurch verhindert man, dass beide Agenten unterschiedliche Versionen des Spiels im Kopf haben.
 
-## 6. Installation und lokales Setup
+## 7. Installation und lokales Setup
 
 Die einfachste Variante fuer lokale KI-Agenten ist Python plus Ollama. Ollama ist ein lokaler LLM-Runner, mit dem man Sprachmodelle auf dem eigenen Rechner starten kann. Laut offizieller Ollama-Dokumentation ist Ollama fuer Windows, macOS und Linux verfuegbar; unter Windows wird die Installation ueber den `OllamaSetup.exe` Installer empfohlen.
 
@@ -103,7 +235,7 @@ Offizielle Links:
 - Ollama Quickstart: https://docs.ollama.com/quickstart
 - Python Downloads: https://www.python.org/downloads/
 
-### 6.1 Voraussetzungen
+### 7.1 Voraussetzungen
 
 Empfohlen:
 
@@ -116,7 +248,7 @@ Empfohlen:
 
 Kleinere Modelle laufen auch auf schwaecheren Rechnern, aber Antworten werden langsamer.
 
-### 6.2 Python installieren
+### 7.2 Python installieren
 
 1. Python von https://www.python.org/downloads/ installieren.
 2. Beim Installer darauf achten, dass `Add Python to PATH` aktiviert ist.
@@ -127,7 +259,7 @@ python --version
 pip --version
 ```
 
-### 6.3 Virtuelle Python-Umgebung erstellen
+### 7.3 Virtuelle Python-Umgebung erstellen
 
 Im Projektordner:
 
@@ -137,7 +269,7 @@ python -m venv .venv
 python -m pip install --upgrade pip
 ```
 
-### 6.4 Python-Abhaengigkeiten installieren
+### 7.4 Python-Abhaengigkeiten installieren
 
 Fuer einen ersten Prototyp reichen wenige Pakete:
 
@@ -151,7 +283,7 @@ Optional fuer spaetere Ausbaustufen:
 pip install fastapi uvicorn websockets
 ```
 
-### 6.5 Ollama installieren
+### 7.5 Ollama installieren
 
 1. Ollama von der offiziellen Website installieren.
 2. Nach der Installation PowerShell oeffnen.
@@ -182,7 +314,7 @@ ollama run llama3.2:3b
 
 Wenn das Modell antwortet, ist die lokale KI-Basis einsatzbereit.
 
-## 7. Wie bringt man den Agenten dazu, die Regeln zu "lernen"?
+## 8. Wie bringt man den Agenten dazu, die Regeln zu "lernen"?
 
 In diesem Projekt bedeutet "lernen" nicht, dass das Modell neu trainiert wird. Ein echtes Training oder Fine-Tuning ist fuer das Projekt wahrscheinlich zu aufwendig.
 
@@ -197,7 +329,230 @@ Stattdessen lernt der Agent die Regeln zur Laufzeit ueber Kontext:
 
 Dieses Verfahren nennt man haeufig In-Context Learning. Das Modell wird nicht dauerhaft veraendert, aber es nutzt die bereitgestellten Informationen innerhalb des aktuellen Prompts.
 
-## 8. Beispiel fuer maschinenlesbare Regeln
+## 9. Kann man den lokalen Agenten trainieren oder fine-tunen?
+
+Ja, grundsaetzlich kann man einen lokalen KI-Agenten verbessern. Wichtig ist aber die Unterscheidung zwischen mehreren Stufen:
+
+| Methode | Was passiert? | Aufwand | Empfehlung fuer dieses Projekt |
+|---|---|---|---|
+| Prompt Engineering | Bessere Anweisungen, Rollenbeschreibung, Ausgabeformat und Strategiehinweise. | gering | Sehr empfohlen |
+| Kontext / Memory | Der Agent bekommt Regeln, Spielstand, Historie und eigene Fehler pro Zug mitgegeben. | gering bis mittel | Sehr empfohlen |
+| Strategie-Code | Der Agent nutzt zusaetzliche Python-Logik, zum Beispiel Simulationen oder Heuristiken. | mittel | Sehr stark, wenn erlaubt |
+| Ollama Modelfile | Ein lokales Modell bekommt feste System-Prompts und Parameter. | gering | Empfehlenswert |
+| Fine-Tuning mit LoRA/QLoRA | Modellgewichte werden mit Beispieldaten angepasst. | hoch | Erst spaeter sinnvoll |
+| Vollstaendiges Training | Ein Modell wird von Grund auf trainiert. | extrem hoch | Fuer dieses Projekt nicht realistisch |
+
+### 9.1 Warum Fine-Tuning meistens nicht der erste Schritt ist
+
+Fine-Tuning klingt verlockend, ist aber fuer ein kleines Spielprojekt oft nicht der beste erste Hebel. Ein Fine-Tuning macht das Modell nicht automatisch "intelligenter". Es lernt vor allem Antwortmuster, Stil, Formate und typische Entscheidungen aus Trainingsbeispielen.
+
+Fuer euren Anwendungsfall ist der Agent oft besser, wenn er:
+
+- die Regeln jedes Mal sauber im Prompt bekommt
+- gueltiges JSON ausgeben muss
+- aus vergangenen Fehlern Feedback bekommt
+- mehrere moegliche Zuege intern bewertet
+- den gegnerischen Agenten beobachtet
+- einfache Simulationen oder Heuristiken verwendet
+
+Das passt auch besser zur Projektidee aus dem `project-proposal.md`, weil dort Prompt Engineering, Shared Context, Logging, Evaluation und dynamische Regeln im Mittelpunkt stehen.
+
+### 9.2 Was ist der Unterschied zwischen Agent verbessern und Modell fine-tunen?
+
+Der Agent kann besser werden, ohne dass das Modell trainiert wird.
+
+Beispiel:
+
+- Das Modell bleibt `llama3.2:3b`.
+- Dein Agent bekommt aber einen besseren System-Prompt.
+- Dein Agent speichert Fehler aus vergangenen Runden.
+- Dein Agent bewertet vor der finalen Antwort mehrere Optionen.
+- Dein Agent prueft seine eigene JSON-Ausgabe.
+
+Dann ist dein Agent wahrscheinlich staerker als ein anderer Agent mit gleichem Modell, aber schlechterer Steuerung.
+
+### 9.3 Empfohlene Verbesserungsstrategie fuer deinen Agenten
+
+Statt sofort Fine-Tuning zu machen, sollte dein Agent in Stufen besser werden.
+
+#### Stufe 1: Stabiler JSON-Agent
+
+Ziel:
+
+- antwortet immer in gueltigem JSON
+- macht nur erlaubte Aktionen
+- erklaert kurz den Grund im Feld `reason`
+
+#### Stufe 2: Strategie-Prompt
+
+Der Prompt kann deinem Agenten klare Prioritaeten geben:
+
+```text
+Priorities:
+1. Never make an invalid move.
+2. Prefer moves that increase your chance of winning within the next turns.
+3. If rule changes are allowed, only propose rules that benefit you and do not obviously benefit the opponent more.
+4. Consider the opponent's likely next move before deciding.
+5. Return only valid JSON.
+```
+
+#### Stufe 3: Selbstpruefung
+
+Der Agent kann vor dem Absenden intern eine Checkliste bekommen:
+
+```text
+Before returning the final JSON, check silently:
+- Is the action allowed by the current rules?
+- Is it my turn?
+- Does the action improve my position?
+- Could the opponent benefit more from this rule change?
+- Is the JSON valid?
+```
+
+#### Stufe 4: Memory aus vergangenen Spielen
+
+Nach jedem Spiel kann man eine kleine Strategie-Datei speichern:
+
+```json
+{
+  "agent_id": "agent_a",
+  "lessons_learned": [
+    "Adding the maximum allowed points is usually best in the base game.",
+    "Rule changes that affect both players equally are only useful if I can use them first.",
+    "Invalid JSON loses tempo, so output format has priority."
+  ]
+}
+```
+
+Diese Datei kann vor jedem Spiel wieder in den Prompt eingefuegt werden. Das ist eine einfache Form von Agent-Memory.
+
+#### Stufe 5: Simulation vor der LLM-Frage
+
+Wenn die Regeln einfach genug sind, kann Python mehrere moegliche Zuege testen. Das LLM bekommt dann nicht nur den Spielstand, sondern auch eine Bewertung:
+
+```json
+{
+  "candidate_moves": [
+    {"move": {"add_points": 1}, "estimated_score": 0.4},
+    {"move": {"add_points": 2}, "estimated_score": 0.6},
+    {"move": {"add_points": 3}, "estimated_score": 0.8}
+  ]
+}
+```
+
+Das ist oft staerker als Fine-Tuning, weil echte Spielregeln deterministisch ausgewertet werden.
+
+### 9.4 Ollama Modelfile als leichter "Pseudo-Fine-Tune"
+
+Ollama unterstuetzt sogenannte Modelfiles. Damit kann man ein vorhandenes Modell mit einem festen System-Prompt, Parametern und einer Vorlage verpacken. Das ist kein echtes Training, aber praktisch sehr nuetzlich.
+
+Offizielle Dokumentation:
+
+- Ollama Modelfile: https://docs.ollama.com/modelfile
+
+Beispiel fuer eine Datei `Modelfile`:
+
+```text
+FROM llama3.2:3b
+
+SYSTEM """
+You are a competitive game-playing agent.
+You always follow the active rules.
+You return only valid JSON.
+You prefer legal actions that improve your chance of winning.
+"""
+
+PARAMETER temperature 0.2
+PARAMETER top_p 0.9
+```
+
+Danach kann man ein eigenes lokales Modellprofil erstellen:
+
+```powershell
+ollama create daniel-agent -f Modelfile
+ollama run daniel-agent
+```
+
+Der Vorteil: Dein Agent hat immer dieselbe Grundrolle und stabilere Parameter. Fuer Spiele ist eine niedrigere `temperature` oft gut, weil der Agent weniger zufaellig antwortet.
+
+### 9.5 Echtes Fine-Tuning mit LoRA/QLoRA
+
+Echtes Fine-Tuning ist moeglich, aber erst sinnvoll, wenn ihr bereits viele gute Trainingsbeispiele gesammelt habt.
+
+Geeignete Daten koennten aus euren Logs entstehen:
+
+```json
+{
+  "input": {
+    "rules": {},
+    "game_state": {},
+    "history": []
+  },
+  "ideal_output": {
+    "action_type": "move",
+    "move": {
+      "add_points": 3
+    },
+    "reason": "This is the strongest legal move."
+  }
+}
+```
+
+Typischer Ablauf:
+
+1. Viele Spiele ausfuehren und loggen.
+2. Gute und schlechte Agent-Aktionen markieren.
+3. Daraus Trainingsbeispiele bauen.
+4. Ein kleines Modell mit LoRA oder QLoRA fine-tunen.
+5. Das neue Modell gegen das Basismodell testen.
+6. Ergebnisse anhand von Metriken vergleichen.
+
+Moegliche Tools:
+
+- Hugging Face TRL `SFTTrainer`: https://huggingface.co/docs/trl/sft_trainer
+- Unsloth Fine-Tuning Docs: https://docs.unsloth.ai/
+
+Fuer lokale Rechner ist LoRA/QLoRA deutlich realistischer als vollstaendiges Fine-Tuning, weil nur kleine Zusatzgewichte trainiert werden. Trotzdem braucht man je nach Modell und Setup eine passende GPU, Geduld und saubere Trainingsdaten.
+
+### 9.6 Wie beweist man, dass dein Agent besser ist?
+
+"Besser" sollte im Projekt messbar sein. Sonst bleibt es nur ein Gefuehl.
+
+Moegliche Metriken:
+
+| Metrik | Bedeutung |
+|---|---|
+| Win Rate | Wie viele Spiele gewinnt der Agent? |
+| Invalid Move Rate | Wie oft macht der Agent ungueltige Aktionen? |
+| JSON Error Rate | Wie oft ist die Antwort nicht parsebar? |
+| Average Turns to Win | Wie schnell gewinnt der Agent? |
+| Rule Change Success Rate | Wie oft helfen vorgeschlagene Regelaenderungen wirklich? |
+| Stability | Bleibt das Spiel ueber viele Runden spielbar? |
+
+Empfohlen ist ein Turniermodus:
+
+```text
+Agent A baseline vs. Agent B baseline: 50 Spiele
+Daniel-Agent vs. Baseline-Agent: 50 Spiele
+Daniel-Agent mit Memory vs. Daniel-Agent ohne Memory: 50 Spiele
+```
+
+Dann koennt ihr im Projekt zeigen, welche Verbesserung wirklich etwas gebracht hat.
+
+### 9.7 Faire Regeln fuer den Vergleich mit dem Kollegen
+
+Wenn ihr wissenschaftlich sauber vergleichen wollt, sollte vorher festgelegt werden:
+
+- Nutzen beide Agenten dasselbe Basismodell?
+- Duerfen beide eigene Prompts verwenden?
+- Duerfen beide Memory verwenden?
+- Duerfen beide zusaetzliche Strategie-Algorithmen verwenden?
+- Duerfen Regeldateien nur gelesen oder auch vorgeschlagen geaendert werden?
+- Zaehlt ein ungueltiger Zug als verlorener Zug oder gibt es Retry?
+
+Wenn diese Punkte klar sind, kann dein Agent ruhig optimiert werden. Dann ist genau das Teil der Untersuchung: Welche Agent-Architektur spielt besser?
+
+## 10. Beispiel fuer maschinenlesbare Regeln
 
 Eine einfache `rules.json` koennte so aussehen:
 
@@ -227,7 +582,7 @@ Eine einfache `rules.json` koennte so aussehen:
 
 Wichtig ist, dass Regeln eindeutig und versioniert sind. Jede Regel sollte eine ID haben, damit Agenten und Logs darauf referenzieren koennen.
 
-## 9. Beispiel fuer Spielzustand
+## 11. Beispiel fuer Spielzustand
 
 ```json
 {
@@ -247,7 +602,7 @@ Wichtig ist, dass Regeln eindeutig und versioniert sind. Jede Regel sollte eine 
 
 Der Spielzustand sollte moeglichst klein und eindeutig bleiben. Je klarer der Zustand ist, desto einfacher kann der Agent gute Entscheidungen treffen.
 
-## 10. Beispiel fuer eine Agent-Antwort
+## 12. Beispiel fuer eine Agent-Antwort
 
 Damit das Programm die Antwort des Modells verarbeiten kann, sollte der Agent immer JSON ausgeben.
 
@@ -274,7 +629,7 @@ Wenn Regelaenderungen erlaubt sind:
 }
 ```
 
-## 11. Prompt-Aufbau fuer den Agenten
+## 13. Prompt-Aufbau fuer den Agenten
 
 Ein guter Prompt trennt Rolle, Regeln, Zustand und Ausgabeformat.
 
@@ -303,7 +658,7 @@ Do not explain outside the JSON.
 
 Wichtig: Das Programm sollte trotzdem pruefen, ob die Antwort wirklich valides JSON ist. LLMs koennen trotz Anweisung manchmal ungueltige Antworten liefern.
 
-## 12. Kommunikation ueber Sockets
+## 14. Kommunikation ueber Sockets
 
 Sockets sind sinnvoll, wenn beide Agenten als eigene Prozesse laufen sollen.
 
@@ -347,7 +702,7 @@ Ein einfacher Ablauf:
 }
 ```
 
-## 13. Minimaler Projektaufbau
+## 15. Minimaler Projektaufbau
 
 Empfohlene Struktur:
 
@@ -373,7 +728,7 @@ projekt-bb-g2-huber-starlinger/
       schemas.py
 ```
 
-## 14. Minimaler Ollama-Client in Python
+## 16. Minimaler Ollama-Client in Python
 
 Ollama stellt lokal eine HTTP-API bereit. Standardmaessig ist sie unter `http://localhost:11434` erreichbar.
 
@@ -397,7 +752,7 @@ def ask_ollama(prompt: str, model: str = "llama3.2:3b") -> str:
 
 Dieser Client ist bewusst einfach. Spaeter sollte man Fehlerbehandlung, Logging und JSON-Validierung ergaenzen.
 
-## 15. Validierung der Agent-Aktionen
+## 17. Validierung der Agent-Aktionen
 
 Der Agent darf nicht direkt den Spielstand veraendern. Er darf nur Vorschlaege machen.
 
@@ -412,7 +767,7 @@ Der Game Server muss pruefen:
 
 Das ist wichtig, weil LLMs Fehler machen koennen. Die Spiellogik muss deterministisch im Code liegen.
 
-## 16. Logging und Auswertung
+## 18. Logging und Auswertung
 
 Fuer ein Studienprojekt ist Logging besonders wichtig, weil ihr spaeter zeigen koennt, wie die Agenten gearbeitet haben.
 
@@ -434,7 +789,7 @@ Zusaetzlich koennt ihr speichern:
 - Regelversion vor und nach dem Zug
 - Dauer der Modellantwort
 
-## 17. Typische Probleme und Loesungen
+## 19. Typische Probleme und Loesungen
 
 | Problem | Ursache | Loesung |
 |---|---|---|
@@ -444,7 +799,7 @@ Zusaetzlich koennt ihr speichern:
 | Lokales Modell ist langsam | Modell zu gross oder Hardware schwach | Kleineres Modell verwenden, zum Beispiel 2B oder 3B. |
 | Regelaenderungen machen Spiel kaputt | Keine Regelvalidierung | Rule Engine mit erlaubten Operationen und Constraints bauen. |
 
-## 18. Empfohlene erste Umsetzung
+## 20. Empfohlene erste Umsetzung
 
 Fuer den ersten Prototyp sollte das Projekt klein bleiben.
 
@@ -457,7 +812,7 @@ Fuer den ersten Prototyp sollte das Projekt klein bleiben.
 7. Jeden Zug in `history.jsonl` speichern.
 8. Danach erst Regelaenderungen erlauben.
 
-## 19. Was spaeter erweitert werden kann
+## 21. Was spaeter erweitert werden kann
 
 Moegliche Erweiterungen:
 
@@ -469,10 +824,19 @@ Moegliche Erweiterungen:
 - Regelkonflikt-Erkennung
 - Bewertungsmetriken fuer Agentenentscheidungen
 - Turniermodus mit mehreren Spielen
+- Vergleich zwischen Baseline-Agent, Prompt-Agent, Memory-Agent und fine-getuntem Agenten
 
-## 20. Fazit
+## 22. Fazit
 
-Fuer dieses Projekt muss der KI-Agent nicht wirklich trainiert werden. Der sinnvolle Einstieg ist ein lokaler LLM-Agent, der vor jedem Zug Regeln, Spielstand und Historie als Kontext bekommt. Die eigentliche Spiel- und Regelvalidierung bleibt im normalen Python-Code.
+Fuer dieses Projekt muss der KI-Agent am Anfang nicht wirklich trainiert werden. Der sinnvolle Einstieg ist ein lokaler LLM-Agent, der vor jedem Zug Regeln, Spielstand und Historie als Kontext bekommt. Die eigentliche Spiel- und Regelvalidierung bleibt im normalen Python-Code.
+
+Wenn dein Agent besser werden soll als der Agent deines Kollegen, ist die beste Reihenfolge:
+
+1. besserer Prompt
+2. stabileres JSON-Format
+3. Memory aus vergangenen Spielen
+4. Heuristiken oder Simulationen im Python-Code
+5. erst danach echtes Fine-Tuning mit gesammelten Trainingsdaten
 
 Damit lernt ihr sehr gut, wie Agenten praktisch funktionieren:
 
