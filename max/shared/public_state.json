@@ -1,0 +1,33 @@
+{
+  "game_id": "e44de945-a613-4186-a7cd-b5e19b532b03",
+  "status": "finished",
+  "players": [
+    {
+      "id": "c0290267-d0fe-4e60-8ff3-eaa903a63714",
+      "name": "daniel",
+      "cards_in_hand": 0,
+      "uno_declared": false
+    },
+    {
+      "id": "81b3f2c6-797c-4d44-ab0a-fc61233f08ea",
+      "name": "max",
+      "cards_in_hand": 4,
+      "uno_declared": false
+    }
+  ],
+  "top_card": {
+    "color": "blue",
+    "value": "3",
+    "type": "number"
+  },
+  "draw_pile_count": 88,
+  "discard_pile_count": 16,
+  "current_player_id": "c0290267-d0fe-4e60-8ff3-eaa903a63714",
+  "current_player_name": "daniel",
+  "direction": 1,
+  "winner_id": "c0290267-d0fe-4e60-8ff3-eaa903a63714",
+  "drawn_this_turn_player_id": null,
+  "turn": 21,
+  "message": "daniel played blue 3 and won the game.",
+  "updated_at": "2026-06-05T15:54:24.275776+00:00"
+}

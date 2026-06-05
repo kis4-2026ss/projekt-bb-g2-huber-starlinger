@@ -1,0 +1,7 @@
+__pycache__/
+.pytest_cache/
+.venv/
+src/uno_api/runtime/
+shared/player_*.json
+shared/events.jsonl
+

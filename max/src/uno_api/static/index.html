@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UNO Local</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="table-panel">
+        <header class="top-bar">
+          <div>
+            <h1>UNO Local</h1>
+            <p id="statusText">Connect to the table.</p>
+          </div>
+          <div class="connection-panel">
+            <input id="playerName" autocomplete="name" placeholder="Player name">
+            <div class="button-row">
+              <button id="createBtn">Create</button>
+              <button id="joinBtn" class="secondary">Join</button>
+            </div>
+          </div>
+        </header>
+
+        <section class="board">
+          <article class="opponents" id="players"></article>
+          <section class="center-stack">
+            <div class="pile draw-pile">
+              <span>Draw</span>
+              <strong id="drawCount">0</strong>
+            </div>
+            <div class="pile discard-pile" id="topCard">
+              <span>Top</span>
+              <strong>-</strong>
+            </div>
+          </section>
+          <aside class="turn-panel">
+            <span>Current turn</span>
+            <strong id="currentTurn">-</strong>
+            <p id="message">No active game.</p>
+          </aside>
+        </section>
+
+        <section class="controls">
+          <button id="drawBtn" class="secondary">Draw</button>
+          <button id="passBtn" class="secondary">Pass</button>
+          <select id="chosenColor" aria-label="Wild color">
+            <option value="">Wild color</option>
+            <option value="red">Red</option>
+            <option value="yellow">Yellow</option>
+            <option value="green">Green</option>
+            <option value="blue">Blue</option>
+          </select>
+        </section>
+
+        <section class="hand" id="hand"></section>
+      </section>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

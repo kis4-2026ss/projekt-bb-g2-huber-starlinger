@@ -25,9 +25,10 @@ We will develop a turn-based game system in which:
 - The game starts with a minimal predefined rule set
 - During each turn, an agent may:
   - perform a normal game action
-  - add a new rule
-  - modify an existing rule
-  - remove a rule
+  - or either:
+    - add a new rule
+    - modify an existing rule
+    - remove a rule
 
 The project focuses on understanding:
 

@@ -1,0 +1,14 @@
+services:
+  uno-game:
+    build: .
+    container_name: uno-game
+    ports:
+      - "8000:8000"
+    environment:
+      UNO_PRIVATE_STATE_PATH: /app/src/uno_api/runtime/game_state.json
+      UNO_SHARED_DIR: /app/shared
+    volumes:
+      - ./shared:/app/shared
+      - ./src/uno_api/runtime:/app/src/uno_api/runtime
+    restart: unless-stopped
+

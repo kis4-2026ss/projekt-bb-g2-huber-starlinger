@@ -1,0 +1,52 @@
+{
+  "game": "UNO",
+  "version": 1,
+  "player_count": 2,
+  "starting_hand_size": 7,
+  "valid_colors": [
+    "red",
+    "yellow",
+    "green",
+    "blue"
+  ],
+  "card_types": {
+    "number": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "action": [
+      "skip",
+      "reverse",
+      "draw_two"
+    ],
+    "wild": [
+      "wild",
+      "wild_draw_four"
+    ]
+  },
+  "matching": [
+    "A non-wild card may be played when its color or value matches the top discard card.",
+    "A wild card may be played on any top discard card."
+  ],
+  "actions": {
+    "skip": "Skips the opponent. In a two-player game, the same player gets the next turn.",
+    "reverse": "Acts like skip in this two-player implementation.",
+    "draw_two": "Opponent draws two cards and loses their turn.",
+    "wild": "Player chooses the next active color.",
+    "wild_draw_four": "Opponent draws four cards and loses their turn; player chooses the next active color."
+  },
+  "turn_actions": [
+    "play",
+    "draw",
+    "pass"
+  ],
+  "win_condition": "A player wins immediately after playing their final card."
+}
