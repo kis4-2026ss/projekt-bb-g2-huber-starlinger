@@ -21,11 +21,23 @@ The server publishes agent-accessible context files into `shared/`:
 | File | Purpose |
 |---|---|
 | `shared/rules.json` | Current public UNO rule set used by the engine. |
+| `shared/base_rules.json` | Immutable base UNO rules. Agents may read this but must not modify it. |
+| `shared/mutable_rules.json` | Agent-created rules that may be added, modified, or removed during a game. |
 | `shared/public_state.json` | Public game state without hidden hands. |
 | `shared/player_<player_id>.json` | Agent-specific context containing that agent's hand. |
 | `shared/events.jsonl` | Append-only event log of game creation, joins, and actions. |
 
 The private full game state is stored under `src/uno_api/runtime/game_state.json` and should not be edited by agents.
+
+`shared/rules.json` combines both rule layers:
+
+```json
+{
+  "base_rules": {},
+  "mutable_rules": {},
+  "note": "Only mutable_rules may be changed by agents. base_rules are immutable."
+}
+```
 
 ## Data Model
 
@@ -78,7 +90,119 @@ Response:
 
 ### `GET /api/rules`
 
-Returns the currently applicable public UNO rules.
+Returns the combined rule document containing immutable `base_rules` and changeable `mutable_rules`.
+
+### `GET /api/rules/base`
+
+Returns the immutable base UNO rules. These are the current original rules and cannot be modified by agents.
+
+### `GET /api/rules/mutable`
+
+Returns the current agent-created mutable rule layer.
+
+### `POST /api/rules/mutable`
+
+Adds a mutable rule.
+
+Request:
+
+```json
+{
+  "player_id": "PLAYER_ID",
+  "rule": {
+    "id": "bonus_red_7",
+    "title": "Bonus Red Seven",
+    "description": "Playing a red 7 is worth style points.",
+    "type": "scoring",
+    "condition": {
+      "color": "red",
+      "value": "7"
+    },
+    "effect": {
+      "style_points": 1
+    }
+  }
+}
+```
+
+Allowed mutable rule types:
+
+```text
+turn_modifier
+draw_modifier
+custom
+```
+
+Supported mechanic effects:
+
+| Effect | Meaning |
+|---|---|
+| `max_plays_per_turn` | Maximum normal card plays an agent may make before the turn advances. |
+| `draw_count` | Number of cards drawn by the normal `draw` action. |
+| `draw_two_penalty` | Number of cards drawn by the opponent after `draw_two`. |
+| `wild_draw_four_penalty` | Number of cards drawn by the opponent after `wild_draw_four`. |
+
+Aliases accepted for `max_plays_per_turn`:
+
+```text
+max_cards_per_turn
+cards_per_turn
+play_limit
+```
+
+Example: allow every agent to play up to two cards per turn:
+
+```json
+{
+  "player_id": "PLAYER_ID",
+  "rule": {
+    "id": "two_cards_per_turn",
+    "title": "Two Cards Per Turn",
+    "description": "Every agent may play up to two normal cards before the turn advances.",
+    "type": "turn_modifier",
+    "condition": {
+      "scope": "all"
+    },
+    "effect": {
+      "max_plays_per_turn": 2
+    }
+  }
+}
+```
+
+Every accepted mutable rule must contain at least one supported mechanic effect. Text-only mutable rules are rejected because mutable rules must affect gameplay.
+
+### `PATCH /api/rules/mutable/{rule_id}`
+
+Modifies an existing mutable rule.
+
+Request:
+
+```json
+{
+  "player_id": "PLAYER_ID",
+  "updates": {
+    "description": "Updated rule description.",
+    "effect": {
+      "style_points": 2
+    }
+  }
+}
+```
+
+### `DELETE /api/rules/mutable/{rule_id}`
+
+Removes an existing mutable rule.
+
+Request:
+
+```json
+{
+  "player_id": "PLAYER_ID"
+}
+```
+
+Rule-change endpoints update the shared rule context and immediately alter core UNO engine behavior for supported mechanic effects.
 
 ### `POST /api/games`
 
@@ -224,6 +348,11 @@ Available wrapper methods:
 ```text
 health
 get_rules
+get_base_rules
+get_mutable_rules
+add_mutable_rule
+modify_mutable_rule
+remove_mutable_rule
 create_game
 join_game
 reset_game

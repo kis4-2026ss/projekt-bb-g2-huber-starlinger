@@ -16,6 +16,10 @@ class FakeTools(UnoGameTools):
         self.calls.append(("POST", path, payload))
         return {"path": path, "payload": payload}
 
+    def _request(self, method, path, payload):
+        self.calls.append((method, path, payload))
+        return {"path": path, "payload": payload}
+
 
 def test_get_player_state_uses_player_query_parameter():
     tools = FakeTools()
@@ -31,6 +35,26 @@ def test_get_observer_state_uses_observer_endpoint():
     result = tools.get_observer_state()
 
     assert result["path"] == "/api/games/observer"
+
+
+def test_add_mutable_rule_builds_payload():
+    tools = FakeTools()
+
+    result = tools.add_mutable_rule("p1", {"title": "Rule", "description": "Desc"})
+
+    assert result["path"] == "/api/rules/mutable"
+    assert result["payload"] == {
+        "player_id": "p1",
+        "rule": {"title": "Rule", "description": "Desc"},
+    }
+
+
+def test_modify_mutable_rule_uses_patch():
+    tools = FakeTools()
+
+    tools.modify_mutable_rule("p1", "rule_1", {"description": "New"})
+
+    assert tools.calls == [("PATCH", "/api/rules/mutable/rule_1", {"player_id": "p1", "updates": {"description": "New"}})]
 
 
 def test_play_card_builds_action_payload():

@@ -60,3 +60,46 @@ def test_observer_view_contains_both_visible_hands():
     assert len(view["players"][0]["hand"]) == 7
     assert len(view["players"][1]["hand"]) == 7
     assert "playable_indexes" in view["players"][0]
+
+
+def test_mutable_rule_mechanics_can_allow_two_normal_plays_in_one_turn():
+    state = active_game()
+    alice = state["players"][0]
+    state["discard_pile"] = [{"color": "red", "value": "3", "type": "number"}]
+    alice["hand"] = [
+        {"color": "red", "value": "5", "type": "number"},
+        {"color": "red", "value": "8", "type": "number"},
+    ]
+
+    result = apply_action(
+        state,
+        alice["id"],
+        {"action": "play", "card_index": 0},
+        {"max_plays_per_turn": 2, "draw_count": 1, "draw_two_penalty": 2, "wild_draw_four_penalty": 4},
+    )
+
+    assert result["current_player_index"] == 0
+    assert result["plays_this_turn_count"] == 1
+    assert "may play again" in result["message"]
+
+
+def test_turn_advances_after_reaching_mutable_play_limit():
+    state = active_game()
+    alice = state["players"][0]
+    state["discard_pile"] = [{"color": "red", "value": "3", "type": "number"}]
+    state["plays_this_turn_player_id"] = alice["id"]
+    state["plays_this_turn_count"] = 1
+    alice["hand"] = [
+        {"color": "red", "value": "5", "type": "number"},
+        {"color": "red", "value": "8", "type": "number"},
+    ]
+
+    result = apply_action(
+        state,
+        alice["id"],
+        {"action": "play", "card_index": 0},
+        {"max_plays_per_turn": 2, "draw_count": 1, "draw_two_penalty": 2, "wild_draw_four_penalty": 4},
+    )
+
+    assert result["current_player_index"] == 1
+    assert result["plays_this_turn_count"] == 0

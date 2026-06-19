@@ -31,6 +31,8 @@ def new_game(player_name: str) -> dict[str, Any]:
         "current_player_index": 0,
         "direction": 1,
         "drawn_this_turn_player_id": None,
+        "plays_this_turn_player_id": None,
+        "plays_this_turn_count": 0,
         "winner_id": None,
         "turn": 0,
         "message": f"Waiting for a second player. {player_name} created the game.",
@@ -55,8 +57,15 @@ def reset_game(player_name: str) -> dict[str, Any]:
     return new_game(player_name)
 
 
-def apply_action(state: dict[str, Any], player_id: str, action: dict[str, Any]) -> dict[str, Any]:
+def apply_action(
+    state: dict[str, Any],
+    player_id: str,
+    action: dict[str, Any],
+    mechanics: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     state = deepcopy(state)
+    mechanics = _mechanics_or_default(mechanics)
+    _ensure_turn_tracking(state)
     if state["status"] != "active":
         raise UnoError("The game is not active.")
 
@@ -70,21 +79,22 @@ def apply_action(state: dict[str, Any], player_id: str, action: dict[str, Any]) 
     if action_type == "draw":
         if state.get("drawn_this_turn_player_id") == player_id:
             raise UnoError("You have already drawn this turn.")
-        drawn = _draw_cards(state, 1)
+        drawn = _draw_cards(state, mechanics["draw_count"])
         player["hand"].extend(drawn)
         state["drawn_this_turn_player_id"] = player_id
-        if _is_playable(drawn[0], _top_card(state)):
-            state["message"] = f"{player['name']} drew a playable card."
+        if any(_is_playable(card, _top_card(state)) for card in drawn):
+            state["message"] = f"{player['name']} drew {len(drawn)} card(s), including a playable card."
         else:
-            state["message"] = f"{player['name']} drew a card and may pass."
+            state["message"] = f"{player['name']} drew {len(drawn)} card(s) and may pass."
     elif action_type == "pass":
-        if state.get("drawn_this_turn_player_id") != player_id and _has_playable_card(player["hand"], _top_card(state)):
+        has_played = state.get("plays_this_turn_player_id") == player_id and state.get("plays_this_turn_count", 0) > 0
+        if not has_played and state.get("drawn_this_turn_player_id") != player_id and _has_playable_card(player["hand"], _top_card(state)):
             raise UnoError("You have a playable card and cannot pass.")
         state["message"] = f"{player['name']} passed."
         state["drawn_this_turn_player_id"] = None
         _advance_turn(state)
     elif action_type == "play":
-        _play_card(state, player_index, action)
+        _play_card(state, player_index, action, mechanics)
     else:
         raise UnoError("Unsupported action.")
 
@@ -93,7 +103,9 @@ def apply_action(state: dict[str, Any], player_id: str, action: dict[str, Any]) 
     return state
 
 
-def public_view(state: dict[str, Any]) -> dict[str, Any]:
+def public_view(state: dict[str, Any], mechanics: dict[str, Any] | None = None) -> dict[str, Any]:
+    mechanics = _mechanics_or_default(mechanics)
+    _ensure_turn_tracking(state)
     return {
         "game_id": state["game_id"],
         "status": state["status"],
@@ -114,14 +126,18 @@ def public_view(state: dict[str, Any]) -> dict[str, Any]:
         "direction": state["direction"],
         "winner_id": state["winner_id"],
         "drawn_this_turn_player_id": state.get("drawn_this_turn_player_id"),
+        "plays_this_turn_player_id": state.get("plays_this_turn_player_id"),
+        "plays_this_turn_count": state.get("plays_this_turn_count", 0),
+        "active_rule_mechanics": mechanics,
         "turn": state["turn"],
         "message": state["message"],
         "updated_at": state["updated_at"],
     }
 
 
-def observer_view(state: dict[str, Any]) -> dict[str, Any]:
-    view = public_view(state)
+def observer_view(state: dict[str, Any], mechanics: dict[str, Any] | None = None) -> dict[str, Any]:
+    mechanics = _mechanics_or_default(mechanics)
+    view = public_view(state, mechanics)
     top_card = _top_card(state) if state["discard_pile"] else None
     view["players"] = [
         {
@@ -138,7 +154,9 @@ def observer_view(state: dict[str, Any]) -> dict[str, Any]:
     return view
 
 
-def player_view(state: dict[str, Any], player_id: str) -> dict[str, Any]:
+def player_view(state: dict[str, Any], player_id: str, mechanics: dict[str, Any] | None = None) -> dict[str, Any]:
+    mechanics = _mechanics_or_default(mechanics)
+    _ensure_turn_tracking(state)
     player_index = _player_index(state, player_id)
     player = state["players"][player_index]
     view = public_view(state)
@@ -148,6 +166,8 @@ def player_view(state: dict[str, Any], player_id: str) -> dict[str, Any]:
         "hand": player["hand"],
         "is_current_turn": player_index == state["current_player_index"] and state["status"] == "active",
         "has_drawn_this_turn": state.get("drawn_this_turn_player_id") == player_id,
+        "plays_this_turn_count": state.get("plays_this_turn_count", 0) if state.get("plays_this_turn_player_id") == player_id else 0,
+        "remaining_plays_this_turn": _remaining_plays_this_turn(state, player_id, mechanics),
     }
     view["playable_indexes"] = _playable_indexes(player["hand"], _top_card(state)) if state["discard_pile"] else []
     return view
@@ -208,6 +228,8 @@ def _start_game(state: dict[str, Any]) -> None:
     state["current_player_index"] = 0
     state["direction"] = 1
     state["drawn_this_turn_player_id"] = None
+    state["plays_this_turn_player_id"] = None
+    state["plays_this_turn_count"] = 0
     state["message"] = f"{state['players'][0]['name']} starts. Top card is {_card_label(first_discard)}."
     state["updated_at"] = utc_now()
 
@@ -254,7 +276,7 @@ def _reshuffle_discard_into_draw(state: dict[str, Any]) -> None:
     state["discard_pile"] = [top]
 
 
-def _play_card(state: dict[str, Any], player_index: int, action: dict[str, Any]) -> None:
+def _play_card(state: dict[str, Any], player_index: int, action: dict[str, Any], mechanics: dict[str, Any]) -> None:
     player = state["players"][player_index]
     card_index = action.get("card_index")
     if card_index is None or card_index >= len(player["hand"]):
@@ -274,38 +296,48 @@ def _play_card(state: dict[str, Any], player_index: int, action: dict[str, Any])
 
     player["uno_declared"] = bool(action.get("declare_uno")) and len(player["hand"]) == 1
     state["discard_pile"].append(played)
+    _record_play_for_turn(state, player["id"])
 
     if not player["hand"]:
         state["status"] = "finished"
         state["winner_id"] = player["id"]
         state["drawn_this_turn_player_id"] = None
+        state["plays_this_turn_player_id"] = None
+        state["plays_this_turn_count"] = 0
         state["message"] = f"{player['name']} played {_card_label(played)} and won the game."
         return
 
     state["drawn_this_turn_player_id"] = None
-    _apply_card_effect(state, played)
+    _apply_card_effect(state, player, played, mechanics)
     if state["status"] == "active":
         suffix = " and declared UNO." if player["uno_declared"] else "."
-        state["message"] = f"{player['name']} played {_card_label(played)}{suffix}"
+        extra = ""
+        if state["current_player_index"] == player_index and _remaining_plays_this_turn(state, player["id"], mechanics) > 0:
+            extra = " They may play again."
+        state["message"] = f"{player['name']} played {_card_label(played)}{suffix}{extra}"
 
 
-def _apply_card_effect(state: dict[str, Any], card: dict[str, Any]) -> None:
+def _apply_card_effect(state: dict[str, Any], player: dict[str, Any], card: dict[str, Any], mechanics: dict[str, Any]) -> None:
     if card["value"] in {"skip", "reverse"}:
         _advance_turn(state, steps=2)
     elif card["value"] == "draw_two":
         victim = _next_player(state)
-        victim["hand"].extend(_draw_cards(state, 2))
+        victim["hand"].extend(_draw_cards(state, mechanics["draw_two_penalty"]))
         _advance_turn(state, steps=2)
     elif card["value"] == "wild_draw_four":
         victim = _next_player(state)
-        victim["hand"].extend(_draw_cards(state, 4))
+        victim["hand"].extend(_draw_cards(state, mechanics["wild_draw_four_penalty"]))
         _advance_turn(state, steps=2)
     else:
-        _advance_turn(state)
+        if not _can_continue_playing(state, player["id"], mechanics):
+            _advance_turn(state)
 
 
 def _advance_turn(state: dict[str, Any], steps: int = 1) -> None:
     state["current_player_index"] = (state["current_player_index"] + state["direction"] * steps) % len(state["players"])
+    state["drawn_this_turn_player_id"] = None
+    state["plays_this_turn_player_id"] = None
+    state["plays_this_turn_count"] = 0
 
 
 def _player_index(state: dict[str, Any], player_id: str) -> int:
@@ -351,3 +383,43 @@ def _card_label(card: dict[str, Any]) -> str:
     if color:
         return f"{color} {card['value']}"
     return card["value"]
+
+
+def _mechanics_or_default(mechanics: dict[str, Any] | None) -> dict[str, Any]:
+    default = {
+        "max_plays_per_turn": 1,
+        "draw_count": 1,
+        "draw_two_penalty": 2,
+        "wild_draw_four_penalty": 4,
+        "active_rule_ids": [],
+    }
+    if mechanics:
+        default.update(mechanics)
+    return default
+
+
+def _ensure_turn_tracking(state: dict[str, Any]) -> None:
+    state.setdefault("plays_this_turn_player_id", None)
+    state.setdefault("plays_this_turn_count", 0)
+
+
+def _record_play_for_turn(state: dict[str, Any], player_id: str) -> None:
+    if state.get("plays_this_turn_player_id") != player_id:
+        state["plays_this_turn_player_id"] = player_id
+        state["plays_this_turn_count"] = 0
+    state["plays_this_turn_count"] += 1
+
+
+def _remaining_plays_this_turn(state: dict[str, Any], player_id: str, mechanics: dict[str, Any]) -> int:
+    if state.get("plays_this_turn_player_id") == player_id:
+        used = state.get("plays_this_turn_count", 0)
+    else:
+        used = 0
+    return max(0, mechanics["max_plays_per_turn"] - used)
+
+
+def _can_continue_playing(state: dict[str, Any], player_id: str, mechanics: dict[str, Any]) -> bool:
+    if _remaining_plays_this_turn(state, player_id, mechanics) <= 0:
+        return False
+    player = state["players"][_player_index(state, player_id)]
+    return _has_playable_card(player["hand"], _top_card(state))

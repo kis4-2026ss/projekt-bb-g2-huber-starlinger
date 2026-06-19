@@ -114,7 +114,10 @@ def build_messages(agent_name: str, state: dict[str, Any]) -> list[dict[str, str
         "current_player_name": state["current_player_name"],
         "your_hand": state["you"]["hand"],
         "playable_indexes": state["playable_indexes"],
+        "active_rule_mechanics": state.get("active_rule_mechanics", {}),
         "has_drawn_this_turn": state["you"].get("has_drawn_this_turn", False),
+        "plays_this_turn_count": state["you"].get("plays_this_turn_count", 0),
+        "remaining_plays_this_turn": state["you"].get("remaining_plays_this_turn", 1),
         "opponents": [
             {
                 "name": player["name"],

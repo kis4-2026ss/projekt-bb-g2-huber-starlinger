@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "description": "Agent-created rules. These may be changed during a game.",
+  "rules": []
+}

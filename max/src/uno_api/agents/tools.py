@@ -26,6 +26,21 @@ class UnoGameTools:
     def get_rules(self) -> dict[str, Any]:
         return self._get("/api/rules")
 
+    def get_base_rules(self) -> dict[str, Any]:
+        return self._get("/api/rules/base")
+
+    def get_mutable_rules(self) -> dict[str, Any]:
+        return self._get("/api/rules/mutable")
+
+    def add_mutable_rule(self, player_id: str, rule: dict[str, Any]) -> dict[str, Any]:
+        return self._post("/api/rules/mutable", {"player_id": player_id, "rule": rule})
+
+    def modify_mutable_rule(self, player_id: str, rule_id: str, updates: dict[str, Any]) -> dict[str, Any]:
+        return self._request("PATCH", f"/api/rules/mutable/{rule_id}", {"player_id": player_id, "updates": updates})
+
+    def remove_mutable_rule(self, player_id: str, rule_id: str) -> dict[str, Any]:
+        return self._request("DELETE", f"/api/rules/mutable/{rule_id}", {"player_id": player_id})
+
     def create_game(self, player_name: str) -> dict[str, Any]:
         return self._post("/api/games", {"player_name": player_name})
 
@@ -83,12 +98,15 @@ class UnoGameTools:
             raise GameApiError(_error_message(exc)) from exc
 
     def _post(self, path: str, payload: dict[str, Any]) -> dict[str, Any]:
+        return self._request("POST", path, payload)
+
+    def _request(self, method: str, path: str, payload: dict[str, Any]) -> dict[str, Any]:
         data = json.dumps(payload).encode("utf-8")
         request = Request(
             f"{self.server}{path}",
             data=data,
             headers={"Content-Type": "application/json"},
-            method="POST",
+            method=method,
         )
         try:
             with urlopen(request) as response:
@@ -111,6 +129,26 @@ def reset_game(server: str, player_name: str) -> dict[str, Any]:
 
 def get_public_state(server: str) -> dict[str, Any]:
     return UnoGameTools(server).get_public_state()
+
+
+def get_base_rules(server: str) -> dict[str, Any]:
+    return UnoGameTools(server).get_base_rules()
+
+
+def get_mutable_rules(server: str) -> dict[str, Any]:
+    return UnoGameTools(server).get_mutable_rules()
+
+
+def add_mutable_rule(server: str, player_id: str, rule: dict[str, Any]) -> dict[str, Any]:
+    return UnoGameTools(server).add_mutable_rule(player_id, rule)
+
+
+def modify_mutable_rule(server: str, player_id: str, rule_id: str, updates: dict[str, Any]) -> dict[str, Any]:
+    return UnoGameTools(server).modify_mutable_rule(player_id, rule_id, updates)
+
+
+def remove_mutable_rule(server: str, player_id: str, rule_id: str) -> dict[str, Any]:
+    return UnoGameTools(server).remove_mutable_rule(player_id, rule_id)
 
 
 def get_observer_state(server: str) -> dict[str, Any]:
