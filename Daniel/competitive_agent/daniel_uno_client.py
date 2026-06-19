@@ -34,6 +34,7 @@ def build_game_context(player_state: dict[str, Any], rules: dict[str, Any]) -> d
     allowed_actions = ["play", "draw"]
     if player_state["you"].get("has_drawn_this_turn"):
         allowed_actions = ["play", "pass"]
+    valid_colors = rules.get("valid_colors") or rules.get("base_rules", {}).get("valid_colors") or list(VALID_COLORS)
 
     return {
         "agent_id": "daniel_agent",
@@ -42,7 +43,7 @@ def build_game_context(player_state: dict[str, Any], rules: dict[str, Any]) -> d
         "hand": player_state["you"]["hand"],
         "playable_indexes": player_state.get("playable_indexes", []),
         "opponent_cards_in_hand": opponent_cards,
-        "valid_colors": rules.get("valid_colors", list(VALID_COLORS)),
+        "valid_colors": valid_colors,
         "allowed_actions": allowed_actions,
         "status": player_state.get("status"),
         "turn": player_state.get("turn"),
@@ -91,8 +92,12 @@ def choose_turn_action(game_context: dict[str, Any], rule_proposal: dict[str, An
     if not rule_proposal or rule_proposal.get("operation") == "none":
         return "game"
 
+    if rule_proposal.get("operation") == "remove":
+        return "rule"
+
     rule = rule_proposal.get("rule") or {}
-    effect = rule.get("effect", {})
+    updates = rule_proposal.get("updates") or {}
+    effect = rule.get("effect") or updates.get("effect", {})
     hand_count = len(game_context.get("hand", []))
     opponent_cards = game_context.get("opponent_cards_in_hand")
 
@@ -114,6 +119,43 @@ def choose_turn_action(game_context: dict[str, Any], rule_proposal: dict[str, An
         return "rule"
 
     return "game"
+
+
+def execute_rule_proposal(tools: UnoGameTools, player_id: str, rule_proposal: dict[str, Any]) -> dict[str, Any] | None:
+    operation = rule_proposal.get("operation")
+    if operation == "none":
+        return None
+    if operation == "add":
+        rule = rule_proposal.get("rule")
+        if not rule:
+            raise ValueError("Rule proposal operation add requires rule.")
+        return tools.add_mutable_rule(player_id, rule)
+    if operation == "modify":
+        rule_id = rule_proposal.get("rule_id")
+        updates = rule_proposal.get("updates")
+        if not rule_id or not isinstance(updates, dict):
+            raise ValueError("Rule proposal operation modify requires rule_id and updates.")
+        return tools.modify_mutable_rule(player_id, rule_id, updates)
+    if operation == "remove":
+        rule_id = rule_proposal.get("rule_id")
+        if not rule_id:
+            raise ValueError("Rule proposal operation remove requires rule_id.")
+        return tools.remove_mutable_rule(player_id, rule_id)
+    raise ValueError(f"Unsupported rule proposal operation: {operation}")
+
+
+def execute_rule_turn(tools: UnoGameTools, player_id: str, rule_proposal: dict[str, Any]) -> dict[str, Any]:
+    rule_result = execute_rule_proposal(tools, player_id, rule_proposal)
+    turn_result = tools.consume_turn_for_rule_change(player_id)
+    return {
+        "rule_result": rule_result,
+        "turn_result": turn_result,
+    }
+
+
+def rule_proposal_label(rule_proposal: dict[str, Any]) -> str:
+    rule = rule_proposal.get("rule") or {}
+    return rule.get("id") or rule_proposal.get("rule_id") or "unknown-rule"
 
 
 def to_api_action(decision: dict[str, Any]) -> dict[str, Any]:
@@ -262,20 +304,26 @@ def run_client(
                 if (
                     turn_action_mode in {"opportunistic", "choose-one"}
                     and turn_choice == "rule"
-                    and rule_proposal["operation"] == "add"
-                    and rule_proposal["rule"]
+                    and rule_proposal["operation"] != "none"
                 ):
-                    rule_result = tools.add_mutable_rule(registered_player_id, rule_proposal["rule"])
+                    if turn_action_mode == "choose-one":
+                        rule_turn_result = execute_rule_turn(tools, registered_player_id, rule_proposal)
+                        write_log(turn_log_file, "RULE SERVER RESULT", json.dumps(rule_turn_result["rule_result"], indent=2, ensure_ascii=False))
+                        print(f"{name}: {rule_proposal['operation']} rule {rule_proposal_label(rule_proposal)}")
+                        turn_result = rule_turn_result["turn_result"]
+                        write_log(turn_log_file, "RULE TURN RESULT", json.dumps(turn_result, indent=2, ensure_ascii=False))
+                        acted_turns += 1
+                        print(f"{name}: turn={turn_result['turn']} {turn_result['message']}")
+                        time.sleep(delay_seconds)
+                        continue
+
+                    rule_result = execute_rule_proposal(tools, registered_player_id, rule_proposal)
                     write_log(turn_log_file, "RULE SERVER RESULT", json.dumps(rule_result, indent=2, ensure_ascii=False))
-                    print(f"{name}: added rule {rule_proposal['rule']['id']}")
+                    print(f"{name}: {rule_proposal['operation']} rule {rule_proposal_label(rule_proposal)}")
+
                     player_state = tools.get_player_state(registered_player_id)
                     rules = tools.get_rules()
                     game_context = build_game_context(player_state, rules)
-
-                    if turn_action_mode == "choose-one":
-                        acted_turns += 1
-                        time.sleep(delay_seconds)
-                        continue
             except Exception as exc:
                 write_log(turn_log_file, "RULE CHANGE SKIPPED", f"{type(exc).__name__}: {exc}")
 
