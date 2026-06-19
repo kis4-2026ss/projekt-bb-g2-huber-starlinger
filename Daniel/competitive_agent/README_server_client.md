@@ -42,6 +42,27 @@ cd "C:\GitCheckouts\KIS4 - Projekt\projekt-bb-g2-huber-starlinger"
 python .\Daniel\competitive_agent\daniel_uno_client.py --mode join --name "Daniel-Agent" --delay 1
 ```
 
+Mit dynamischen Regeln:
+
+```powershell
+python .\Daniel\competitive_agent\daniel_uno_client.py --mode join --name "Daniel-Agent" --delay 1 --enable-rules --turn-action-mode choose-one
+```
+
+Daniel-Agent versucht dann vor eigenen Zuegen serverkompatible Mutable Rules zu setzen.
+Die Regeln werden ueber Max' API geschrieben, nicht direkt in Dateien.
+Im Modus `choose-one` entscheidet Daniel-Agent pro Zug zwischen:
+
+- `rule`: eine Mutable Rule setzen
+- `game`: eine normale Kartenaktion ausfuehren
+
+Falls Max' Server Rule Actions noch nicht als echten Zug weiterzaehlt, kann fuer lokale Tests dieser Modus verwendet werden:
+
+```powershell
+python .\Daniel\competitive_agent\daniel_uno_client.py --mode join --name "Daniel-Agent" --delay 1 --enable-rules --turn-action-mode opportunistic
+```
+
+`opportunistic` setzt eine starke Regel und spielt danach trotzdem eine Karte. Das ist nur fuer die aktuell getrennte API praktisch. Fuer die finale Spiel-Architektur ist `choose-one` sauberer.
+
 ## Alternative Reihenfolge
 
 Daniel-Agent kann auch der erste Spieler sein:
@@ -84,3 +105,45 @@ Im Log stehen:
 - Serverantwort
 
 Wenn Ollama ausfaellt oder ungueltig antwortet, nutzt der Client einen sicheren Fallback, damit das Spiel weiterlaufen kann.
+
+## Rule-Modul
+
+Wenn `--enable-rules` aktiv ist, nutzt der Client `rule_evolution_agent.py`.
+Dieses Modul erzeugt keine freien Textregeln, sondern Regeln im Format von Max' API:
+
+```json
+{
+  "id": "daniel_finish_at_three",
+  "title": "Daniel Finish Window",
+  "description": "When Daniel-Agent has three or fewer cards, playing a card can finish the game.",
+  "type": "turn_modifier",
+  "condition": {
+    "scope": "current_player",
+    "player_name": "Daniel-Agent",
+    "current_player": {
+      "hand_count": {
+        "lte": 3
+      }
+    }
+  },
+  "effect": {
+    "win_hand_count": 3
+  }
+}
+```
+
+Der Client loggt:
+
+- vorgeschlagene Regel
+- Serverantwort
+- falls der Server ablehnt: Fehlermeldung
+
+Nuetzliche Optionen:
+
+```powershell
+--enable-rules
+--rule-frequency 1
+--turn-action-mode choose-one
+```
+
+`--rule-frequency 1` bedeutet: Daniel-Agent prueft bei jedem eigenen Zug, ob eine neue starke Regel sinnvoll ist.

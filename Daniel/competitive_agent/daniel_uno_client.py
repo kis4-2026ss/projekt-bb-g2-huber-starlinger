@@ -13,8 +13,10 @@ MAX_SRC_DIR = PROJECT_DIR / "max" / "src"
 LOG_DIR = BASE_DIR / "logs"
 
 sys.path.insert(0, str(MAX_SRC_DIR))
+sys.path.insert(0, str(BASE_DIR))
 
 from uno_api.agents.tools import DEFAULT_SERVER, GameApiError, UnoGameTools  # noqa: E402
+from rule_evolution_agent import propose_mutable_rule  # noqa: E402
 from strategy_agent import analyze_context, decide, write_log  # noqa: E402
 
 
@@ -47,6 +49,71 @@ def build_game_context(player_state: dict[str, Any], rules: dict[str, Any]) -> d
         "message": player_state.get("message"),
         "has_drawn_this_turn": player_state["you"].get("has_drawn_this_turn", False),
     }
+
+
+def build_rule_context(player_state: dict[str, Any], mutable_rules: dict[str, Any]) -> dict[str, Any]:
+    own_player_id = player_state["you"]["id"]
+    opponent_cards = None
+    for player in player_state.get("players", []):
+        if player["id"] != own_player_id:
+            opponent_cards = player.get("cards_in_hand")
+            break
+
+    return {
+        "player_id": own_player_id,
+        "player_name": player_state["you"]["name"],
+        "turn": player_state.get("turn"),
+        "hand": player_state["you"]["hand"],
+        "top_card": player_state.get("top_card"),
+        "playable_indexes": player_state.get("playable_indexes", []),
+        "opponent_cards_in_hand": opponent_cards,
+        "mutable_rules": mutable_rules,
+        "active_rule_mechanics": player_state.get("active_rule_mechanics", {}),
+        "message": player_state.get("message"),
+    }
+
+
+def should_try_rule_change(acted_turns: int, rule_frequency: int) -> bool:
+    if rule_frequency < 1:
+        return False
+    return acted_turns % rule_frequency == 0
+
+
+def has_immediate_game_win(game_context: dict[str, Any]) -> bool:
+    return len(game_context.get("hand", [])) == 1 and bool(game_context.get("playable_indexes", []))
+
+
+def choose_turn_action(game_context: dict[str, Any], rule_proposal: dict[str, Any] | None) -> str:
+    """Choose whether Daniel-Agent should spend this turn on a game or rule action."""
+
+    if has_immediate_game_win(game_context):
+        return "game"
+    if not rule_proposal or rule_proposal.get("operation") == "none":
+        return "game"
+
+    rule = rule_proposal.get("rule") or {}
+    effect = rule.get("effect", {})
+    hand_count = len(game_context.get("hand", []))
+    opponent_cards = game_context.get("opponent_cards_in_hand")
+
+    if "win_hand_count" in effect and hand_count <= int(effect["win_hand_count"]):
+        return "rule"
+    if "max_plays_per_turn" in effect and hand_count <= 5:
+        return "rule"
+    if opponent_cards is not None and opponent_cards <= 2:
+        pressure_effects = {
+            "draw_count",
+            "draw_two_penalty",
+            "wild_draw_four_penalty",
+            "skip_penalty_cards",
+            "reverse_penalty_cards",
+        }
+        if pressure_effects.intersection(effect):
+            return "rule"
+    if any(key in effect for key in ("allow_number_on_number", "allow_action_on_action")):
+        return "rule"
+
+    return "game"
 
 
 def to_api_action(decision: dict[str, Any]) -> dict[str, Any]:
@@ -141,6 +208,9 @@ def run_client(
     max_turns: int,
     delay_seconds: float,
     player_id: str | None,
+    enable_rules: bool,
+    rule_frequency: int,
+    turn_action_mode: str,
 ) -> dict[str, Any]:
     LOG_DIR.mkdir(exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -153,7 +223,11 @@ def run_client(
     print(f"{name} registered with player_id={registered_player_id}")
     print(f"Log-Datei: {log_file}")
 
-    write_log(log_file, "CLIENT START", f"server={server}\nmode={mode}\nplayer_id={registered_player_id}")
+    write_log(
+        log_file,
+        "CLIENT START",
+        f"server={server}\nmode={mode}\nplayer_id={registered_player_id}\nenable_rules={enable_rules}\nrule_frequency={rule_frequency}\nturn_action_mode={turn_action_mode}",
+    )
 
     acted_turns = 0
     while acted_turns < max_turns:
@@ -174,6 +248,36 @@ def run_client(
         rules = tools.get_rules()
         game_context = build_game_context(player_state, rules)
         turn_log_file = log_file
+        rule_proposal = None
+
+        if enable_rules and turn_action_mode != "game-only" and should_try_rule_change(acted_turns, rule_frequency):
+            try:
+                mutable_rules = tools.get_mutable_rules()
+                rule_context = build_rule_context(player_state, mutable_rules)
+                rule_proposal = propose_mutable_rule(rule_context, turn_log_file)
+                write_log(turn_log_file, "RULE PROPOSAL", json.dumps(rule_proposal, indent=2, ensure_ascii=False))
+                turn_choice = choose_turn_action(game_context, rule_proposal)
+                write_log(turn_log_file, "TURN ACTION CHOICE", turn_choice)
+
+                if (
+                    turn_action_mode in {"opportunistic", "choose-one"}
+                    and turn_choice == "rule"
+                    and rule_proposal["operation"] == "add"
+                    and rule_proposal["rule"]
+                ):
+                    rule_result = tools.add_mutable_rule(registered_player_id, rule_proposal["rule"])
+                    write_log(turn_log_file, "RULE SERVER RESULT", json.dumps(rule_result, indent=2, ensure_ascii=False))
+                    print(f"{name}: added rule {rule_proposal['rule']['id']}")
+                    player_state = tools.get_player_state(registered_player_id)
+                    rules = tools.get_rules()
+                    game_context = build_game_context(player_state, rules)
+
+                    if turn_action_mode == "choose-one":
+                        acted_turns += 1
+                        time.sleep(delay_seconds)
+                        continue
+            except Exception as exc:
+                write_log(turn_log_file, "RULE CHANGE SKIPPED", f"{type(exc).__name__}: {exc}")
 
         try:
             decision = decide(game_context, turn_log_file)
@@ -210,10 +314,28 @@ def main() -> int:
     parser.add_argument("--player-id", help="Existing player id for --mode resume.")
     parser.add_argument("--max-turns", type=int, default=300, help="Stop after this many Daniel-Agent decisions.")
     parser.add_argument("--delay", type=float, default=0.5, help="Delay between polling/decisions.")
+    parser.add_argument("--enable-rules", action="store_true", help="Let Daniel-Agent add supported mutable rules.")
+    parser.add_argument("--rule-frequency", type=int, default=1, help="Try a rule change every N Daniel turns.")
+    parser.add_argument(
+        "--turn-action-mode",
+        choices=("game-only", "opportunistic", "choose-one"),
+        default="choose-one",
+        help="game-only never changes rules, opportunistic can add a rule before a card action, choose-one spends the turn on either rule or game action.",
+    )
     args = parser.parse_args()
 
     try:
-        final_state = run_client(args.server, args.mode, args.name, args.max_turns, args.delay, args.player_id)
+        final_state = run_client(
+            args.server,
+            args.mode,
+            args.name,
+            args.max_turns,
+            args.delay,
+            args.player_id,
+            args.enable_rules,
+            args.rule_frequency,
+            args.turn_action_mode,
+        )
     except GameApiError as exc:
         print(f"UNO API error: {exc}")
         return 1
