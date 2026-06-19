@@ -7,7 +7,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from .engine import UnoError, apply_action, join_game, new_game, player_view, public_view
+from .engine import UnoError, apply_action, join_game, new_game, observer_view, player_view, public_view
 from .models import ApiMessage, CreateGameRequest, JoinGameRequest, PlayerActionRequest
 from .storage import ensure_storage, load_rules, load_state, save_state
 
@@ -15,8 +15,8 @@ STATIC_DIR = Path(__file__).resolve().parent / "static"
 STATE_LOCK = Lock()
 
 app = FastAPI(
-    title="UNO Local Network API",
-    description="A two-player UNO implementation playable by REST API calls, CLI, or browser.",
+    title="UNO Agent API",
+    description="A two-agent UNO environment with REST tools and a read-only observer dashboard.",
     version="0.1.0",
 )
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
@@ -77,6 +77,11 @@ def get_state(player_id: str | None = None) -> dict:
         return player_view(state, player_id)
     except UnoError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.get("/api/games/observer")
+def get_observer_state() -> dict:
+    return observer_view(load_state())
 
 
 @app.post("/api/games/actions")

@@ -1,33 +1,33 @@
 {
-  "game_id": "e44de945-a613-4186-a7cd-b5e19b532b03",
+  "game_id": "8c9c103d-7859-41ee-ad2d-ecce029f4cd1",
   "status": "finished",
   "players": [
     {
-      "id": "c0290267-d0fe-4e60-8ff3-eaa903a63714",
-      "name": "daniel",
-      "cards_in_hand": 0,
+      "id": "e66153df-a7a2-4579-a2bd-a6948fae59ca",
+      "name": "Agent A",
+      "cards_in_hand": 3,
       "uno_declared": false
     },
     {
-      "id": "81b3f2c6-797c-4d44-ab0a-fc61233f08ea",
-      "name": "max",
-      "cards_in_hand": 4,
+      "id": "1cae65ca-0eaf-46ad-a175-baca928b8ba9",
+      "name": "Agent B",
+      "cards_in_hand": 0,
       "uno_declared": false
     }
   ],
   "top_card": {
-    "color": "blue",
-    "value": "3",
+    "color": "yellow",
+    "value": "2",
     "type": "number"
   },
-  "draw_pile_count": 88,
-  "discard_pile_count": 16,
-  "current_player_id": "c0290267-d0fe-4e60-8ff3-eaa903a63714",
-  "current_player_name": "daniel",
+  "draw_pile_count": 77,
+  "discard_pile_count": 28,
+  "current_player_id": "1cae65ca-0eaf-46ad-a175-baca928b8ba9",
+  "current_player_name": "Agent B",
   "direction": 1,
-  "winner_id": "c0290267-d0fe-4e60-8ff3-eaa903a63714",
+  "winner_id": "1cae65ca-0eaf-46ad-a175-baca928b8ba9",
   "drawn_this_turn_player_id": null,
-  "turn": 21,
-  "message": "daniel played blue 3 and won the game.",
-  "updated_at": "2026-06-05T15:54:24.275776+00:00"
+  "turn": 49,
+  "message": "Agent B played yellow 2 and won the game.",
+  "updated_at": "2026-06-19T00:53:42.581432+00:00"
 }

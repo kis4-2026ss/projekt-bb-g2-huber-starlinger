@@ -1,7 +1,7 @@
 [project]
 name = "uno-local-api"
 version = "0.1.0"
-description = "Two-player UNO game playable through REST API, CLI, and browser."
+description = "Two-agent UNO environment with REST tools and a read-only observer dashboard."
 requires-python = ">=3.11"
 dependencies = [
   "fastapi>=0.110",
@@ -15,7 +15,7 @@ dev = [
 ]
 
 [project.scripts]
-uno-cli = "uno_api.cli:main"
+uno-simple-agents = "uno_api.agents.simple_agent:main"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

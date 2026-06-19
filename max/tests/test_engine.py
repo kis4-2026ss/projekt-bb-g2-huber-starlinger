@@ -1,6 +1,6 @@
 import pytest
 
-from uno_api.engine import UnoError, apply_action, join_game, new_game
+from uno_api.engine import UnoError, apply_action, join_game, new_game, observer_view
 
 
 def active_game():
@@ -49,3 +49,14 @@ def test_wild_requires_chosen_color():
 
     with pytest.raises(UnoError):
         apply_action(state, alice["id"], {"action": "play", "card_index": 0})
+
+
+def test_observer_view_contains_both_visible_hands():
+    state = active_game()
+
+    view = observer_view(state)
+
+    assert len(view["players"]) == 2
+    assert len(view["players"][0]["hand"]) == 7
+    assert len(view["players"][1]["hand"]) == 7
+    assert "playable_indexes" in view["players"][0]

@@ -120,6 +120,24 @@ def public_view(state: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def observer_view(state: dict[str, Any]) -> dict[str, Any]:
+    view = public_view(state)
+    top_card = _top_card(state) if state["discard_pile"] else None
+    view["players"] = [
+        {
+            "id": player["id"],
+            "name": player["name"],
+            "cards_in_hand": len(player["hand"]),
+            "hand": player["hand"],
+            "uno_declared": player.get("uno_declared", False),
+            "is_current_turn": index == state["current_player_index"] and state["status"] == "active",
+            "playable_indexes": _playable_indexes(player["hand"], top_card) if top_card else [],
+        }
+        for index, player in enumerate(state["players"])
+    ]
+    return view
+
+
 def player_view(state: dict[str, Any], player_id: str) -> dict[str, Any]:
     player_index = _player_index(state, player_id)
     player = state["players"][player_index]
