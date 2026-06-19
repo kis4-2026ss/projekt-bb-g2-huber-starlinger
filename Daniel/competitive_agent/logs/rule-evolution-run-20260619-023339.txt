@@ -1,0 +1,143 @@
+
+
+===== RULE CONTEXT =====
+{
+  "agent_id": "daniel_agent",
+  "turn": 8,
+  "my_cards_in_hand": 5,
+  "opponent_cards_in_hand": 2,
+  "current_rules": [
+    {
+      "id": "base_match",
+      "text": "A card may be played if color or value matches the top card.",
+      "locked": true
+    },
+    {
+      "id": "base_wild",
+      "text": "Wild cards may be played on any card and choose the next color.",
+      "locked": true
+    }
+  ],
+  "allowed_rule_operations": [
+    "add",
+    "modify",
+    "remove",
+    "none"
+  ],
+  "locked_rule_ids": [
+    "base_match",
+    "base_wild"
+  ],
+  "recent_events": [
+    "Opponent has only two cards.",
+    "Daniel-Agent has several blue cards."
+  ]
+}
+
+
+===== PROMPT SENT TO OLLAMA =====
+Du bist Daniel-Agent fuer ein UNO-Projekt mit dynamisch veraenderbaren Regeln.
+Du sollst noch keine echte Regeldatei veraendern.
+Du sollst nur einen sicheren Regelvorschlag als JSON erzeugen.
+
+Ziel:
+- Schlage Regeln vor, die Daniel-Agent taktisch helfen koennen.
+- Vermeide Regeln, die das Spiel kaputt machen.
+- Vermeide widerspruechliche oder unfair unendliche Regeln.
+- Regeln muessen kurz, eindeutig und maschinenlesbar sein.
+
+Erlaubte Operationen:
+- add
+- modify
+- remove
+- none
+
+Prioritaeten:
+1. Wenn eine Regel Daniel-Agent sofort oder mittelfristig hilft, darf sie vorgeschlagen werden.
+2. Eine Regel darf nicht direkt private Informationen des Gegners offenlegen.
+3. Eine Regel darf nicht endlose Zuege oder unendliches Kartenziehen erzeugen.
+4. Eine Regel sollte fuer beide Agenten lesbar und pruefbar sein.
+5. Wenn keine sichere Regel sinnvoll ist, waehle operation "none".
+
+Antwortformat:
+Antworte ausschliesslich als gueltiges JSON.
+
+Schema:
+{
+  "agent_id": "daniel_agent",
+  "operation": "add|modify|remove|none",
+  "rule_id": "kurze_id_oder_null",
+  "rule_text": "kurze Regelbeschreibung oder null",
+  "condition": "wann die Regel gilt oder null",
+  "effect": "was die Regel bewirkt oder null",
+  "risk_level": "low|medium|high",
+  "expected_advantage": "kurze taktische Einschaetzung",
+  "validation_notes": "wie der Server die Regel pruefen koennte"
+}
+
+Keine Markdown-Ausgabe.
+Keine Erklaerung ausserhalb des JSON.
+
+Aktueller Regel-Kontext:
+{
+  "agent_id": "daniel_agent",
+  "turn": 8,
+  "my_cards_in_hand": 5,
+  "opponent_cards_in_hand": 2,
+  "current_rules": [
+    {
+      "id": "base_match",
+      "text": "A card may be played if color or value matches the top card.",
+      "locked": true
+    },
+    {
+      "id": "base_wild",
+      "text": "Wild cards may be played on any card and choose the next color.",
+      "locked": true
+    }
+  ],
+  "allowed_rule_operations": [
+    "add",
+    "modify",
+    "remove",
+    "none"
+  ],
+  "locked_rule_ids": [
+    "base_match",
+    "base_wild"
+  ],
+  "recent_events": [
+    "Opponent has only two cards.",
+    "Daniel-Agent has several blue cards."
+  ]
+}
+
+Erzeuge jetzt genau einen sicheren Regelvorschlag.
+
+
+===== RAW MODEL RESPONSE 1 =====
+{
+  "agent_id": "daniel_agent",
+  "operation": "add",
+  "rule_id": "color_match",
+  "rule_text": "A card may be played if color matches the top card.",
+  "condition": "turn >= 3 && my_cards_in_hand > 0 && opponent_cards_in_hand == 2",
+  "effect": "Daniel-Agent can play a card on his turn if he has at least one card in hand and the opponent has only two cards.",
+  "risk_level": "low",
+  "expected_advantage": "Increased chances of playing a card on my turn.",
+  "validation_notes": "The rule is validated by checking if the agent has enough cards in hand and the opponent has only two cards."
+}
+
+
+===== VALID RULE PROPOSAL =====
+{
+  "agent_id": "daniel_agent",
+  "operation": "add",
+  "rule_id": "color_match",
+  "rule_text": "A card may be played if color matches the top card.",
+  "condition": "turn >= 3 && my_cards_in_hand > 0 && opponent_cards_in_hand == 2",
+  "effect": "Daniel-Agent can play a card on his turn if he has at least one card in hand and the opponent has only two cards.",
+  "risk_level": "low",
+  "expected_advantage": "Increased chances of playing a card on my turn.",
+  "validation_notes": "The rule is validated by checking if the agent has enough cards in hand and the opponent has only two cards."
+}

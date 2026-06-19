@@ -1,0 +1,49 @@
+
+
+===== USER TASK =====
+Sage kurz, dass der Agent bereit ist.
+
+
+===== PROMPT SENT TO OLLAMA =====
+Du bist ein lokaler KI-Agent fuer ein spaeteres Spielprojekt.
+Du sollst noch kein Spiel spielen.
+
+Deine Aufgabe:
+- lies die Aufgabe des Benutzers
+- entscheide eine einfache Aktion
+- antworte ausschliesslich als gueltiges JSON
+
+Erlaubtes Ausgabeformat:
+{
+  "agent_id": "agent_a",
+  "action": "answer",
+  "message": "kurze Antwort"
+}
+
+Wichtig:
+- Gib keinen Markdown-Text aus.
+- Gib keine Erklaerung ausserhalb des JSON aus.
+- Das JSON muss mit { beginnen und mit } enden.
+
+Aufgabe des Benutzers:
+Sage kurz, dass der Agent bereit ist.
+
+
+===== ATTEMPT 1 =====
+Sending prompt to Ollama.
+
+
+===== RAW MODEL RESPONSE 1 =====
+{"agent_id": "agent_a", "action": "answer", "message": "Ich bin bereit!"}
+
+
+===== VALID JSON RESPONSE 1 =====
+{
+  "agent_id": "agent_a",
+  "action": "answer",
+  "message": "Ich bin bereit!"
+}
+
+
+===== MODEL EXPLANATION =====
+Die Antwort passt zu dieser Aufgabe, weil sie eine klare und unverwechselbare Bestätigung darstellt, dass der Agent (Agent A) bereit ist, die Aufgabe zu erfüllen.
