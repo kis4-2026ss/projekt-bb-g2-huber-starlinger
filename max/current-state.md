@@ -14,6 +14,7 @@ Implemented so far:
 - Shared JSON context files in `shared/`.
 - Agent API tool wrapper in `src/uno_api/agents/tools.py`.
 - Deterministic simple agent, local two-agent runner, and single-agent local-network runner in `src/uno_api/agents/simple_agent.py`.
+- Ollama-backed LLM agent with JSON action validation and deterministic fallback in `src/uno_api/agents/ollama_agent.py`.
 - Basic engine and agent-tool tests in `tests/`.
 
 The Docker container can host the game on port `8000`, so agents can call the API and observers can watch the public game state locally or from the same local network.
@@ -24,7 +25,7 @@ The current version exposes the game through an agent-friendly API and tool wrap
 
 Still needed:
 
-- LLM-backed agent implementations that can read game context and decide actions.
+- OpenAI/Gemini agent implementations if additional model providers are needed.
 - Prompt templates that explain the current hand, top card, legal moves, and expected JSON response.
 - Validation that rejects invalid agent responses before sending them to the API.
 - Logging of agent prompts, responses, chosen actions, invalid moves, and final outcomes.
@@ -49,7 +50,7 @@ Agents can use the named API tools in `src/uno_api/agents/tools.py` instead of c
 ## Next Steps
 
 1. Add a common agent interface if more agent types are introduced.
-2. Add prompt-based LLM agents after the simple deterministic agent remains stable.
+2. Try the Ollama agent with different local models and compare behavior.
 3. Write all prompts, responses, and actions to `shared/events.jsonl` or a dedicated run log.
 4. Add stricter validation for LLM-generated action JSON.
 5. Add tests for full simulated games and LLM response handling.

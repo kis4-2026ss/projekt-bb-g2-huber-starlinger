@@ -309,6 +309,55 @@ The simple agent always follows the same strategy:
 3. Draw if no card is playable.
 4. Pass if it already drew this turn and still has no playable card.
 
+## Ollama Agent Runner
+
+The Ollama-backed agent is implemented in `src/uno_api/agents/ollama_agent.py`.
+
+Prerequisites:
+
+```bash
+ollama serve
+ollama pull llama3.2:3b
+```
+
+Run two Ollama agents locally against the UNO server:
+
+```bash
+PYTHONPATH=src python -m uno_api.agents.ollama_agent \
+  --server http://127.0.0.1:8000 \
+  --ollama-url http://127.0.0.1:11434 \
+  --model llama3.2:3b \
+  --delay 1
+```
+
+Run one Ollama agent per computer on a local network:
+
+Computer 1:
+
+```bash
+PYTHONPATH=src python -m uno_api.agents.ollama_agent \
+  --server http://192.168.1.42:8000 \
+  --ollama-url http://127.0.0.1:11434 \
+  --model llama3.2:3b \
+  --mode reset \
+  --name "Ollama Agent A" \
+  --delay 1
+```
+
+Computer 2:
+
+```bash
+PYTHONPATH=src python -m uno_api.agents.ollama_agent \
+  --server http://192.168.1.42:8000 \
+  --ollama-url http://127.0.0.1:11434 \
+  --model llama3.2:3b \
+  --mode join \
+  --name "Ollama Agent B" \
+  --delay 1
+```
+
+The Ollama agent asks the model for one strict JSON action per turn. If Ollama returns invalid JSON, an illegal action, or is temporarily unavailable, the agent falls back to the deterministic simple-agent action for that turn so the game can continue.
+
 ## Docker Usage
 
 Build and start the server:
