@@ -86,6 +86,9 @@ class UnoGameTools:
     def pass_turn(self, player_id: str) -> dict[str, Any]:
         return self._post("/api/games/actions", {"player_id": player_id, "action": "pass"})
 
+    def consume_turn_for_rule_change(self, player_id: str) -> dict[str, Any]:
+        return self._post("/api/games/actions", {"player_id": player_id, "action": "rule_change"})
+
     def submit_action(self, player_id: str, action: dict[str, Any]) -> dict[str, Any]:
         payload = {"player_id": player_id, **action}
         return self._post("/api/games/actions", payload)
@@ -175,6 +178,10 @@ def draw_card(server: str, player_id: str) -> dict[str, Any]:
 
 def pass_turn(server: str, player_id: str) -> dict[str, Any]:
     return UnoGameTools(server).pass_turn(player_id)
+
+
+def consume_turn_for_rule_change(server: str, player_id: str) -> dict[str, Any]:
+    return UnoGameTools(server).consume_turn_for_rule_change(player_id)
 
 
 def _error_message(exc: HTTPError) -> str:

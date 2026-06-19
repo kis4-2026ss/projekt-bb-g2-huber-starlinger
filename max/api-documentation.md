@@ -70,9 +70,10 @@ Allowed agent actions:
 play
 draw
 pass
+rule_change
 ```
 
-`play` requires `card_index`. Wild cards also require `chosen_color`.
+`play` requires `card_index`. Wild cards also require `chosen_color`. `rule_change` is used internally by rule-capable agents after they successfully add, modify, or remove a mutable rule; it consumes the current turn.
 
 ## Endpoints
 
@@ -506,6 +507,7 @@ PYTHONPATH=src python -m uno_api.agents.ollama_agent \
   --server http://127.0.0.1:8000 \
   --ollama-url http://127.0.0.1:11434 \
   --model llama3.2:3b \
+  --rule-change-interval 4 \
   --delay 1
 ```
 
@@ -520,6 +522,7 @@ PYTHONPATH=src python -m uno_api.agents.ollama_agent \
   --model llama3.2:3b \
   --mode reset \
   --name "Ollama Agent A" \
+  --rule-change-interval 4 \
   --delay 1
 ```
 
@@ -532,10 +535,50 @@ PYTHONPATH=src python -m uno_api.agents.ollama_agent \
   --model llama3.2:3b \
   --mode join \
   --name "Ollama Agent B" \
+  --rule-change-interval 4 \
   --delay 1
 ```
 
-The Ollama agent asks the model for one strict JSON action per turn. If Ollama returns invalid JSON, an illegal action, or is temporarily unavailable, the agent falls back to the deterministic simple-agent action for that turn so the game can continue.
+The Ollama agent asks the model for one strict JSON decision per turn. It may choose either a normal game action or a mutable rule action. By default, the runner forces a mutable rule action when no mutable rules exist and then every 4 turns. Change that cadence with `--rule-change-interval N`, or set it to `0` to disable forced rule changes and leave rule edits entirely to the model.
+
+Rule action response shape:
+
+```json
+{
+  "kind": "rule_action",
+  "rule_action": {
+    "operation": "add",
+    "rule": {
+      "id": "two_cards_per_turn",
+      "title": "Two Cards Per Turn",
+      "description": "Every agent may play up to two cards before the turn advances.",
+      "type": "turn_modifier",
+      "condition": {
+        "scope": "all"
+      },
+      "effect": {
+        "max_plays_per_turn": 2
+      }
+    }
+  }
+}
+```
+
+Normal game action response shape:
+
+```json
+{
+  "kind": "game_action",
+  "game_action": {
+    "action": "play",
+    "card_index": 0,
+    "chosen_color": null,
+    "declare_uno": true
+  }
+}
+```
+
+If Ollama returns a game action on a forced rule-change turn, the runner uses a validated built-in mutable-rule proposal. If Ollama returns invalid JSON, an illegal action, or an invalid rule change on a normal turn, the agent falls back to the deterministic simple-agent action so the game can continue.
 
 ## Docker Usage
 

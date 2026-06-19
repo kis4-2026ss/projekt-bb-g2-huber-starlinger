@@ -95,6 +95,9 @@ def apply_action(
         _advance_turn(state)
     elif action_type == "play":
         _play_card(state, player_index, action, mechanics)
+    elif action_type == "rule_change":
+        state["message"] = f"{player['name']} changed the mutable rules."
+        _advance_turn(state)
     else:
         raise UnoError("Unsupported action.")
 

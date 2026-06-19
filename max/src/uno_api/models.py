@@ -13,7 +13,7 @@ class JoinGameRequest(BaseModel):
 
 class PlayerActionRequest(BaseModel):
     player_id: str = Field(min_length=1)
-    action: Literal["play", "draw", "pass"]
+    action: Literal["play", "draw", "pass", "rule_change"]
     card_index: int | None = Field(default=None, ge=0)
     chosen_color: Literal["red", "yellow", "green", "blue"] | None = None
     declare_uno: bool = False

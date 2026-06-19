@@ -57,6 +57,15 @@ def test_modify_mutable_rule_uses_patch():
     assert tools.calls == [("PATCH", "/api/rules/mutable/rule_1", {"player_id": "p1", "updates": {"description": "New"}})]
 
 
+def test_consume_turn_for_rule_change_builds_action_payload():
+    tools = FakeTools()
+
+    result = tools.consume_turn_for_rule_change("p1")
+
+    assert result["path"] == "/api/games/actions"
+    assert result["payload"] == {"player_id": "p1", "action": "rule_change"}
+
+
 def test_play_card_builds_action_payload():
     tools = FakeTools()
 

@@ -106,6 +106,127 @@ p {
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
 }
 
+.rules-panel {
+  border: 1px solid var(--line);
+  border-top: 0;
+  background: rgba(16, 16, 21, 0.82);
+}
+
+.rules-panel summary {
+  min-height: 54px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 18px;
+  cursor: pointer;
+  font-weight: 1000;
+  text-transform: uppercase;
+}
+
+.rules-panel summary::marker {
+  color: var(--yellow);
+}
+
+.rules-panel summary strong {
+  color: var(--yellow);
+}
+
+.rules-content {
+  display: grid;
+  gap: 14px;
+  padding: 0 18px 18px;
+}
+
+.rules-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.rules-list {
+  display: grid;
+  gap: 12px;
+  max-height: 360px;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+.rule-empty,
+.rule-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.rule-empty {
+  padding: 16px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.rule-card {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.rule-card.rule-new {
+  animation: ruleFlash 1.15s ease-out;
+  border-color: var(--yellow);
+}
+
+.rule-card header,
+.rule-card footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rule-card header span,
+.rule-card section span,
+.rule-card footer {
+  color: var(--muted);
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.rule-card header strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 1.1rem;
+}
+
+.rule-card code {
+  color: var(--yellow);
+  overflow-wrap: anywhere;
+}
+
+.rule-card p {
+  margin: 0;
+}
+
+.rule-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.rule-card pre {
+  min-height: 96px;
+  max-height: 180px;
+  overflow: auto;
+  margin: 6px 0 0;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.28);
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
 .agent-zone {
   min-height: 184px;
 }
@@ -466,6 +587,21 @@ p {
   }
 }
 
+@keyframes ruleFlash {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(240, 198, 46, 0);
+  }
+  30% {
+    transform: scale(1.01);
+    box-shadow: 0 0 34px rgba(240, 198, 46, 0.34);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(240, 198, 46, 0);
+  }
+}
+
 @media (max-width: 900px) {
   .arena-header {
     display: grid;
@@ -486,6 +622,16 @@ p {
 
   .ticker {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rule-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rules-meta,
+  .rule-card header,
+  .rule-card footer {
+    display: grid;
   }
 
   .mini-card {

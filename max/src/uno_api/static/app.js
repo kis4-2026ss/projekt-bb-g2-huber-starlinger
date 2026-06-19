@@ -19,7 +19,10 @@ const els = {
   turnCount: document.querySelector("#turnCount"),
   direction: document.querySelector("#direction"),
   impactLayer: document.querySelector("#impactLayer"),
-  soundToggle: document.querySelector("#soundToggle")
+  soundToggle: document.querySelector("#soundToggle"),
+  ruleCount: document.querySelector("#ruleCount"),
+  rulesVersion: document.querySelector("#rulesVersion"),
+  rulesList: document.querySelector("#rulesList")
 };
 
 let previousState = null;
@@ -31,6 +34,7 @@ const rendered = {
   topCard: "",
   players: new Map(),
   message: "",
+  rules: "",
 };
 
 els.soundToggle.addEventListener("click", async () => {
@@ -49,7 +53,12 @@ setInterval(refresh, 1000);
 
 async function refresh() {
   try {
-    render(await api.get("/api/games/observer"));
+    const [state, mutableRules] = await Promise.all([
+      api.get("/api/games/observer"),
+      api.get("/api/rules/mutable"),
+    ]);
+    render(state);
+    renderRules(mutableRules);
   } catch (error) {
     setMessage(error.message);
   }
@@ -112,6 +121,57 @@ function renderMessage(message) {
   void els.message.offsetWidth;
   els.message.classList.add("message-flash");
   rendered.message = message;
+}
+
+function renderRules(mutableRules) {
+  const rules = mutableRules.rules || [];
+  const signature = JSON.stringify(mutableRules);
+  if (rendered.rules === signature) {
+    return;
+  }
+
+  const previousRules = rendered.rules ? JSON.parse(rendered.rules).rules || [] : [];
+  const previousById = new Map(previousRules.map((rule) => [rule.id, JSON.stringify(rule)]));
+
+  els.ruleCount.textContent = `${rules.length} active`;
+  els.rulesVersion.textContent = mutableRules.version ?? "-";
+  els.rulesList.innerHTML = rules.length
+    ? rules.map((rule) => renderRuleCard(rule, previousById)).join("")
+    : `<article class="rule-empty">No mutable rules have been applied yet.</article>`;
+
+  rendered.rules = signature;
+}
+
+function renderRuleCard(rule, previousById) {
+  const wasKnown = previousById.has(rule.id);
+  const changed = wasKnown && previousById.get(rule.id) !== JSON.stringify(rule);
+  const freshClass = !wasKnown || changed ? " rule-new" : "";
+  return `
+    <article class="rule-card${freshClass}">
+      <header>
+        <div>
+          <span>${escapeHtml(rule.type)}</span>
+          <strong>${escapeHtml(rule.title)}</strong>
+        </div>
+        <code>${escapeHtml(rule.id)}</code>
+      </header>
+      <p>${escapeHtml(rule.description)}</p>
+      <div class="rule-grid">
+        <section>
+          <span>Condition</span>
+          <pre>${escapeHtml(JSON.stringify(rule.condition || {}, null, 2))}</pre>
+        </section>
+        <section>
+          <span>Effect</span>
+          <pre>${escapeHtml(JSON.stringify(rule.effect || {}, null, 2))}</pre>
+        </section>
+      </div>
+      <footer>
+        <span>Created by ${escapeHtml(rule.created_by || "-")}</span>
+        ${rule.modified_by ? `<span>Modified by ${escapeHtml(rule.modified_by)}</span>` : ""}
+      </footer>
+    </article>
+  `;
 }
 
 function renderAgentZone(container, player, state) {

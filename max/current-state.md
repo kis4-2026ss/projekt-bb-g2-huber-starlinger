@@ -16,23 +16,20 @@ Implemented so far:
 - Engine integration for supported mutable rule effects: turn limits, draw amounts, action-card penalties, matching changes, and alternate win thresholds.
 - Agent API tool wrapper in `src/uno_api/agents/tools.py`.
 - Deterministic simple agent, local two-agent runner, and single-agent local-network runner in `src/uno_api/agents/simple_agent.py`.
-- Ollama-backed LLM agent with JSON action validation and deterministic fallback in `src/uno_api/agents/ollama_agent.py`.
+- Ollama-backed LLM agent with JSON decision validation, forced mutable-rule cadence, built-in rule proposals, and deterministic gameplay fallback in `src/uno_api/agents/ollama_agent.py`.
 - Basic engine and agent-tool tests in `tests/`.
 
 The Docker container can host the game on port `8000`, so agents can call the API and observers can watch the public game state locally or from the same local network.
 
 ## Still Needed For Two Agents
 
-The current version exposes the game through an agent-friendly API and tool wrapper, but does not yet include autonomous decision-making agents.
+The current version can run two deterministic agents or two Ollama-backed agents. The Ollama runner can force rule changes with `--rule-change-interval`; the default is every 4 turns and `0` disables forced rule changes.
 
 Still needed:
 
 - OpenAI/Gemini agent implementations if additional model providers are needed.
-- Prompt templates that explain the current hand, top card, current mutable rules, legal moves, and expected JSON response.
-- Validation that rejects invalid agent responses before sending them to the API.
 - More supported mutable rule effects if the project needs additional mechanics beyond the current declarative primitive set.
 - Logging of agent prompts, responses, chosen actions, invalid moves, and final outcomes.
-- Optional provider adapters for OpenAI, Gemini, Ollama, or mock agents.
 - Evaluation logic for comparing agent strategies and game stability.
 
 ## Communication Files
@@ -55,7 +52,7 @@ Agents can use the named API tools in `src/uno_api/agents/tools.py` instead of c
 ## Next Steps
 
 1. Add a common agent interface if more agent types are introduced.
-2. Teach LLM agents when to choose normal card actions versus mutable rule changes.
+2. Tune the forced rule-change cadence and prompt strategy after observing several Ollama games.
 3. Add more supported mutable rule effects after the first rule-evolution experiments.
 4. Try the Ollama agent with different local models and compare behavior.
 5. Write all prompts, responses, and actions to `shared/events.jsonl` or a dedicated run log.
