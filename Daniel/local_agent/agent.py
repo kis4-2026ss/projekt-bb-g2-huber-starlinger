@@ -98,7 +98,6 @@ def main() -> None:
 
         # promt wird gebaut
         prompt = build_prompt(user_task)
-
         
         try:
             #anfrage los schicken
