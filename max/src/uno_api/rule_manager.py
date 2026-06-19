@@ -17,6 +17,12 @@ SUPPORTED_EFFECT_KEYS = {
     "draw_count",
     "draw_two_penalty",
     "wild_draw_four_penalty",
+    "skip_penalty_cards",
+    "reverse_penalty_cards",
+    "allow_same_type_match",
+    "allow_number_on_number",
+    "allow_action_on_action",
+    "win_hand_count",
 }
 
 EFFECT_ALIASES = {
@@ -26,7 +32,44 @@ EFFECT_ALIASES = {
     "draw_cards": "draw_count",
     "draw_two_amount": "draw_two_penalty",
     "wild_draw_four_amount": "wild_draw_four_penalty",
+    "skip_draw_penalty": "skip_penalty_cards",
+    "reverse_draw_penalty": "reverse_penalty_cards",
+    "same_type_match": "allow_same_type_match",
+    "number_on_number": "allow_number_on_number",
+    "action_on_action": "allow_action_on_action",
+    "win_threshold": "win_hand_count",
 }
+
+INT_EFFECT_KEYS = {
+    "max_plays_per_turn",
+    "draw_count",
+    "draw_two_penalty",
+    "wild_draw_four_penalty",
+    "skip_penalty_cards",
+    "reverse_penalty_cards",
+    "win_hand_count",
+}
+
+BOOL_EFFECT_KEYS = {
+    "allow_same_type_match",
+    "allow_number_on_number",
+    "allow_action_on_action",
+}
+
+ALLOWED_CONDITION_KEYS = {
+    "scope",
+    "player_id",
+    "player_name",
+    "top_color",
+    "top_value",
+    "top_type",
+    "top_card",
+    "current_player",
+    "opponent",
+}
+
+ALLOWED_CARD_CONDITION_KEYS = {"color", "value", "type"}
+ALLOWED_PLAYER_CONDITION_KEYS = {"id", "name", "hand_count"}
 
 
 class RuleChangeError(ValueError):
@@ -55,6 +98,12 @@ def rule_mechanics(mutable_rules: dict[str, Any], context: dict[str, Any] | None
         "draw_count": 1,
         "draw_two_penalty": 2,
         "wild_draw_four_penalty": 4,
+        "skip_penalty_cards": 0,
+        "reverse_penalty_cards": 0,
+        "allow_same_type_match": False,
+        "allow_number_on_number": False,
+        "allow_action_on_action": False,
+        "win_hand_count": 0,
         "active_rule_ids": [],
     }
     context = context or {}
@@ -63,9 +112,12 @@ def rule_mechanics(mutable_rules: dict[str, Any], context: dict[str, Any] | None
             continue
         mechanics["active_rule_ids"].append(rule["id"])
         effect = normalize_effect(rule.get("effect", {}))
-        for key in SUPPORTED_EFFECT_KEYS:
+        for key in INT_EFFECT_KEYS:
             if key in effect:
                 mechanics[key] = max(mechanics[key], _positive_int(effect[key], key))
+        for key in BOOL_EFFECT_KEYS:
+            if key in effect:
+                mechanics[key] = mechanics[key] or _bool_value(effect[key], key)
     return mechanics
 
 
@@ -138,6 +190,8 @@ def _normalize_rule(rule: dict[str, Any], player_id: str) -> dict[str, Any]:
         raise RuleChangeError("Rule description is required.")
     if rule_type not in ALLOWED_MUTABLE_RULE_TYPES:
         raise RuleChangeError(f"Rule type must be one of: {', '.join(sorted(ALLOWED_MUTABLE_RULE_TYPES))}.")
+    condition = rule.get("condition", {})
+    _validate_condition(condition)
     effect = normalize_effect(rule.get("effect", {}))
     _validate_effect(effect)
 
@@ -152,7 +206,7 @@ def _normalize_rule(rule: dict[str, Any], player_id: str) -> dict[str, Any]:
         "description": description,
         "type": rule_type,
         "status": status,
-        "condition": rule.get("condition", {}),
+        "condition": condition,
         "effect": effect,
         "created_by": rule.get("created_by", player_id),
         "created_at": rule.get("created_at", utc_now()),
@@ -181,17 +235,49 @@ def _validate_effect(effect: dict[str, Any]) -> None:
             "Mutable rules must include at least one supported mechanic effect: "
             f"{', '.join(sorted(SUPPORTED_EFFECT_KEYS))}."
         )
-    for key in supported:
+    for key in supported.intersection(INT_EFFECT_KEYS):
         value = _positive_int(effect[key], key)
         if key == "max_plays_per_turn" and value > 4:
             raise RuleChangeError("max_plays_per_turn cannot be greater than 4.")
-        if key in {"draw_count", "draw_two_penalty", "wild_draw_four_penalty"} and value > 10:
+        if key in {"draw_count", "draw_two_penalty", "wild_draw_four_penalty", "skip_penalty_cards", "reverse_penalty_cards"} and value > 10:
             raise RuleChangeError(f"{key} cannot be greater than 10.")
+        if key == "win_hand_count" and value > 3:
+            raise RuleChangeError("win_hand_count cannot be greater than 3.")
+    for key in supported.intersection(BOOL_EFFECT_KEYS):
+        _bool_value(effect[key], key)
+
+
+def _validate_condition(condition: dict[str, Any]) -> None:
+    if not isinstance(condition, dict):
+        raise RuleChangeError("Rule condition must be a JSON object.")
+    unknown = set(condition) - ALLOWED_CONDITION_KEYS
+    if unknown:
+        raise RuleChangeError(f"Unsupported condition key(s): {', '.join(sorted(unknown))}.")
+    if "top_card" in condition:
+        _validate_nested_keys(condition["top_card"], ALLOWED_CARD_CONDITION_KEYS, "top_card")
+    if "current_player" in condition:
+        _validate_nested_keys(condition["current_player"], ALLOWED_PLAYER_CONDITION_KEYS, "current_player")
+    if "opponent" in condition:
+        _validate_nested_keys(condition["opponent"], ALLOWED_PLAYER_CONDITION_KEYS, "opponent")
+
+
+def _validate_nested_keys(value: Any, allowed: set[str], label: str) -> None:
+    if not isinstance(value, dict):
+        raise RuleChangeError(f"{label} condition must be a JSON object.")
+    unknown = set(value) - allowed
+    if unknown:
+        raise RuleChangeError(f"Unsupported {label} condition key(s): {', '.join(sorted(unknown))}.")
 
 
 def _positive_int(value: Any, field_name: str) -> int:
     if not isinstance(value, int) or value < 1:
         raise RuleChangeError(f"{field_name} must be a positive integer.")
+    return value
+
+
+def _bool_value(value: Any, field_name: str) -> bool:
+    if not isinstance(value, bool):
+        raise RuleChangeError(f"{field_name} must be a boolean.")
     return value
 
 
@@ -212,5 +298,53 @@ def _condition_applies(condition: dict[str, Any], context: dict[str, Any]) -> bo
     if "top_color" in condition and condition["top_color"] != context.get("top_color"):
         return False
     if "top_value" in condition and condition["top_value"] != context.get("top_value"):
+        return False
+    if "top_type" in condition and condition["top_type"] != context.get("top_type"):
+        return False
+    if "top_card" in condition and not _card_condition_applies(condition["top_card"], context):
+        return False
+    if "current_player" in condition and not _player_condition_applies(condition["current_player"], context, "current_player"):
+        return False
+    if "opponent" in condition and not _player_condition_applies(condition["opponent"], context, "opponent"):
+        return False
+    return True
+
+
+def _card_condition_applies(condition: dict[str, Any], context: dict[str, Any]) -> bool:
+    if "color" in condition and condition["color"] != context.get("top_color"):
+        return False
+    if "value" in condition and condition["value"] != context.get("top_value"):
+        return False
+    if "type" in condition and condition["type"] != context.get("top_type"):
+        return False
+    return True
+
+
+def _player_condition_applies(condition: dict[str, Any], context: dict[str, Any], prefix: str) -> bool:
+    if "id" in condition and condition["id"] != context.get(f"{prefix}_id"):
+        return False
+    if "name" in condition and condition["name"] != context.get(f"{prefix}_name"):
+        return False
+    if "hand_count" in condition and not _number_condition_applies(condition["hand_count"], context.get(f"{prefix}_hand_count")):
+        return False
+    return True
+
+
+def _number_condition_applies(condition: Any, actual: int | None) -> bool:
+    if actual is None:
+        return False
+    if isinstance(condition, int):
+        return actual == condition
+    if not isinstance(condition, dict):
+        return False
+    if "eq" in condition and actual != condition["eq"]:
+        return False
+    if "lt" in condition and actual >= condition["lt"]:
+        return False
+    if "lte" in condition and actual > condition["lte"]:
+        return False
+    if "gt" in condition and actual <= condition["gt"]:
+        return False
+    if "gte" in condition and actual < condition["gte"]:
         return False
     return True

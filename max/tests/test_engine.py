@@ -103,3 +103,60 @@ def test_turn_advances_after_reaching_mutable_play_limit():
 
     assert result["current_player_index"] == 1
     assert result["plays_this_turn_count"] == 0
+
+
+def test_mutable_matching_rule_can_allow_number_on_number():
+    state = active_game()
+    alice = state["players"][0]
+    state["discard_pile"] = [{"color": "red", "value": "3", "type": "number"}]
+    alice["hand"] = [{"color": "blue", "value": "8", "type": "number"}]
+
+    result = apply_action(
+        state,
+        alice["id"],
+        {"action": "play", "card_index": 0},
+        {"allow_number_on_number": True},
+    )
+
+    assert result["status"] == "finished"
+
+
+def test_mutable_skip_penalty_draws_cards_for_opponent():
+    state = active_game()
+    alice = state["players"][0]
+    bob = state["players"][1]
+    state["discard_pile"] = [{"color": "red", "value": "3", "type": "number"}]
+    alice["hand"] = [
+        {"color": "red", "value": "skip", "type": "action"},
+        {"color": "blue", "value": "8", "type": "number"},
+    ]
+    before = len(bob["hand"])
+
+    result = apply_action(
+        state,
+        alice["id"],
+        {"action": "play", "card_index": 0},
+        {"skip_penalty_cards": 2},
+    )
+
+    assert len(result["players"][1]["hand"]) == before + 2
+
+
+def test_mutable_win_hand_count_can_change_win_threshold():
+    state = active_game()
+    alice = state["players"][0]
+    state["discard_pile"] = [{"color": "red", "value": "3", "type": "number"}]
+    alice["hand"] = [
+        {"color": "red", "value": "5", "type": "number"},
+        {"color": "blue", "value": "8", "type": "number"},
+    ]
+
+    result = apply_action(
+        state,
+        alice["id"],
+        {"action": "play", "card_index": 0},
+        {"win_hand_count": 1},
+    )
+
+    assert result["status"] == "finished"
+    assert result["winner_id"] == alice["id"]

@@ -82,13 +82,13 @@ def apply_action(
         drawn = _draw_cards(state, mechanics["draw_count"])
         player["hand"].extend(drawn)
         state["drawn_this_turn_player_id"] = player_id
-        if any(_is_playable(card, _top_card(state)) for card in drawn):
+        if any(_is_playable(card, _top_card(state), mechanics) for card in drawn):
             state["message"] = f"{player['name']} drew {len(drawn)} card(s), including a playable card."
         else:
             state["message"] = f"{player['name']} drew {len(drawn)} card(s) and may pass."
     elif action_type == "pass":
         has_played = state.get("plays_this_turn_player_id") == player_id and state.get("plays_this_turn_count", 0) > 0
-        if not has_played and state.get("drawn_this_turn_player_id") != player_id and _has_playable_card(player["hand"], _top_card(state)):
+        if not has_played and state.get("drawn_this_turn_player_id") != player_id and _has_playable_card(player["hand"], _top_card(state), mechanics):
             raise UnoError("You have a playable card and cannot pass.")
         state["message"] = f"{player['name']} passed."
         state["drawn_this_turn_player_id"] = None
@@ -147,7 +147,7 @@ def observer_view(state: dict[str, Any], mechanics: dict[str, Any] | None = None
             "hand": player["hand"],
             "uno_declared": player.get("uno_declared", False),
             "is_current_turn": index == state["current_player_index"] and state["status"] == "active",
-            "playable_indexes": _playable_indexes(player["hand"], top_card) if top_card else [],
+            "playable_indexes": _playable_indexes(player["hand"], top_card, mechanics) if top_card else [],
         }
         for index, player in enumerate(state["players"])
     ]
@@ -159,7 +159,7 @@ def player_view(state: dict[str, Any], player_id: str, mechanics: dict[str, Any]
     _ensure_turn_tracking(state)
     player_index = _player_index(state, player_id)
     player = state["players"][player_index]
-    view = public_view(state)
+    view = public_view(state, mechanics)
     view["you"] = {
         "id": player["id"],
         "name": player["name"],
@@ -169,7 +169,7 @@ def player_view(state: dict[str, Any], player_id: str, mechanics: dict[str, Any]
         "plays_this_turn_count": state.get("plays_this_turn_count", 0) if state.get("plays_this_turn_player_id") == player_id else 0,
         "remaining_plays_this_turn": _remaining_plays_this_turn(state, player_id, mechanics),
     }
-    view["playable_indexes"] = _playable_indexes(player["hand"], _top_card(state)) if state["discard_pile"] else []
+    view["playable_indexes"] = _playable_indexes(player["hand"], _top_card(state), mechanics) if state["discard_pile"] else []
     return view
 
 
@@ -284,7 +284,7 @@ def _play_card(state: dict[str, Any], player_index: int, action: dict[str, Any],
 
     card = player["hand"][card_index]
     top_card = _top_card(state)
-    if not _is_playable(card, top_card):
+    if not _is_playable(card, top_card, mechanics):
         raise UnoError(f"{_card_label(card)} cannot be played on {_card_label(top_card)}.")
 
     chosen_color = action.get("chosen_color")
@@ -298,7 +298,7 @@ def _play_card(state: dict[str, Any], player_index: int, action: dict[str, Any],
     state["discard_pile"].append(played)
     _record_play_for_turn(state, player["id"])
 
-    if not player["hand"]:
+    if len(player["hand"]) <= mechanics["win_hand_count"] or not player["hand"]:
         state["status"] = "finished"
         state["winner_id"] = player["id"]
         state["drawn_this_turn_player_id"] = None
@@ -318,7 +318,13 @@ def _play_card(state: dict[str, Any], player_index: int, action: dict[str, Any],
 
 
 def _apply_card_effect(state: dict[str, Any], player: dict[str, Any], card: dict[str, Any], mechanics: dict[str, Any]) -> None:
-    if card["value"] in {"skip", "reverse"}:
+    if card["value"] == "skip":
+        if mechanics["skip_penalty_cards"]:
+            _next_player(state)["hand"].extend(_draw_cards(state, mechanics["skip_penalty_cards"]))
+        _advance_turn(state, steps=2)
+    elif card["value"] == "reverse":
+        if mechanics["reverse_penalty_cards"]:
+            _next_player(state)["hand"].extend(_draw_cards(state, mechanics["reverse_penalty_cards"]))
         _advance_turn(state, steps=2)
     elif card["value"] == "draw_two":
         victim = _next_player(state)
@@ -364,18 +370,27 @@ def _effective_color(card: dict[str, Any]) -> str | None:
     return card.get("chosen_color") or card.get("color")
 
 
-def _is_playable(card: dict[str, Any], top_card: dict[str, Any]) -> bool:
+def _is_playable(card: dict[str, Any], top_card: dict[str, Any], mechanics: dict[str, Any] | None = None) -> bool:
+    mechanics = _mechanics_or_default(mechanics)
     if card["type"] == "wild":
         return True
-    return card["color"] == _effective_color(top_card) or card["value"] == top_card["value"]
+    if card["color"] == _effective_color(top_card) or card["value"] == top_card["value"]:
+        return True
+    if mechanics["allow_same_type_match"] and card["type"] == top_card["type"]:
+        return True
+    if mechanics["allow_number_on_number"] and card["type"] == "number" and top_card["type"] == "number":
+        return True
+    if mechanics["allow_action_on_action"] and card["type"] == "action" and top_card["type"] == "action":
+        return True
+    return False
 
 
-def _has_playable_card(hand: list[dict[str, Any]], top_card: dict[str, Any]) -> bool:
-    return any(_is_playable(card, top_card) for card in hand)
+def _has_playable_card(hand: list[dict[str, Any]], top_card: dict[str, Any], mechanics: dict[str, Any] | None = None) -> bool:
+    return any(_is_playable(card, top_card, mechanics) for card in hand)
 
 
-def _playable_indexes(hand: list[dict[str, Any]], top_card: dict[str, Any]) -> list[int]:
-    return [index for index, card in enumerate(hand) if _is_playable(card, top_card)]
+def _playable_indexes(hand: list[dict[str, Any]], top_card: dict[str, Any], mechanics: dict[str, Any] | None = None) -> list[int]:
+    return [index for index, card in enumerate(hand) if _is_playable(card, top_card, mechanics)]
 
 
 def _card_label(card: dict[str, Any]) -> str:
@@ -391,6 +406,12 @@ def _mechanics_or_default(mechanics: dict[str, Any] | None) -> dict[str, Any]:
         "draw_count": 1,
         "draw_two_penalty": 2,
         "wild_draw_four_penalty": 4,
+        "skip_penalty_cards": 0,
+        "reverse_penalty_cards": 0,
+        "allow_same_type_match": False,
+        "allow_number_on_number": False,
+        "allow_action_on_action": False,
+        "win_hand_count": 0,
         "active_rule_ids": [],
     }
     if mechanics:
@@ -422,4 +443,4 @@ def _can_continue_playing(state: dict[str, Any], player_id: str, mechanics: dict
     if _remaining_plays_this_turn(state, player_id, mechanics) <= 0:
         return False
     player = state["players"][_player_index(state, player_id)]
-    return _has_playable_card(player["hand"], _top_card(state))
+    return _has_playable_card(player["hand"], _top_card(state), mechanics)

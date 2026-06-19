@@ -17,7 +17,7 @@ def sample_rule():
         "title": "Bonus Red Seven",
         "description": "Players may play two cards per turn.",
         "type": "turn_modifier",
-        "condition": {"color": "red", "value": "7"},
+        "condition": {"scope": "all"},
         "effect": {"max_plays_per_turn": 2},
     }
 
@@ -79,3 +79,29 @@ def test_add_mutable_rule_rejects_non_mechanical_effect():
 
     with pytest.raises(RuleChangeError):
         add_mutable_rule(default_mutable_rules(), "p1", rule)
+
+
+def test_rule_mechanics_supports_nested_top_card_condition():
+    rule = sample_rule()
+    rule["condition"] = {"top_card": {"color": "red", "type": "number"}}
+    rules = add_mutable_rule(default_mutable_rules(), "p1", rule)
+
+    assert rule_mechanics(rules, {"top_color": "red", "top_type": "number"})["max_plays_per_turn"] == 2
+    assert rule_mechanics(rules, {"top_color": "blue", "top_type": "number"})["max_plays_per_turn"] == 1
+
+
+def test_rule_mechanics_supports_player_hand_count_condition():
+    rule = sample_rule()
+    rule["condition"] = {"current_player": {"hand_count": {"lte": 2}}}
+    rules = add_mutable_rule(default_mutable_rules(), "p1", rule)
+
+    assert rule_mechanics(rules, {"current_player_hand_count": 2})["max_plays_per_turn"] == 2
+    assert rule_mechanics(rules, {"current_player_hand_count": 3})["max_plays_per_turn"] == 1
+
+
+def test_rule_mechanics_supports_boolean_matching_effects():
+    rule = sample_rule()
+    rule["effect"] = {"allow_same_type_match": True}
+    rules = add_mutable_rule(default_mutable_rules(), "p1", rule)
+
+    assert rule_mechanics(rules)["allow_same_type_match"] is True

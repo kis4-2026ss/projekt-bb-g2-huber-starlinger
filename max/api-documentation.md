@@ -141,6 +141,12 @@ Supported mechanic effects:
 | `draw_count` | Number of cards drawn by the normal `draw` action. |
 | `draw_two_penalty` | Number of cards drawn by the opponent after `draw_two`. |
 | `wild_draw_four_penalty` | Number of cards drawn by the opponent after `wild_draw_four`. |
+| `skip_penalty_cards` | Number of cards drawn by the opponent after `skip`. |
+| `reverse_penalty_cards` | Number of cards drawn by the opponent after `reverse`. |
+| `allow_same_type_match` | Allows cards to be played on cards of the same type, even without color/value match. |
+| `allow_number_on_number` | Allows any number card to be played on any other number card. |
+| `allow_action_on_action` | Allows any action card to be played on any other action card. |
+| `win_hand_count` | Allows a player to win after a play leaves them with this many cards or fewer. |
 
 Aliases accepted for `max_plays_per_turn`:
 
@@ -171,6 +177,50 @@ Example: allow every agent to play up to two cards per turn:
 ```
 
 Every accepted mutable rule must contain at least one supported mechanic effect. Text-only mutable rules are rejected because mutable rules must affect gameplay.
+
+Supported condition primitives:
+
+| Condition | Example |
+|---|---|
+| Global scope | `"condition": {"scope": "all"}` |
+| Top-card shorthand | `"condition": {"top_color": "red", "top_value": "7", "top_type": "number"}` |
+| Top-card object | `"condition": {"top_card": {"color": "red", "type": "number"}}` |
+| Current player | `"condition": {"current_player": {"hand_count": {"lte": 2}}}` |
+| Opponent | `"condition": {"opponent": {"hand_count": {"gte": 5}}}` |
+
+Numeric comparisons support:
+
+```text
+eq
+lt
+lte
+gt
+gte
+```
+
+Example: if the current agent has two or fewer cards, they may play any number on any number:
+
+```json
+{
+  "player_id": "PLAYER_ID",
+  "rule": {
+    "id": "low_hand_number_freedom",
+    "title": "Low Hand Number Freedom",
+    "description": "Agents with two or fewer cards may play any number card on any number card.",
+    "type": "turn_modifier",
+    "condition": {
+      "current_player": {
+        "hand_count": {
+          "lte": 2
+        }
+      }
+    },
+    "effect": {
+      "allow_number_on_number": true
+    }
+  }
+}
+```
 
 ### `PATCH /api/rules/mutable/{rule_id}`
 

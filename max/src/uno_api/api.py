@@ -178,13 +178,21 @@ def _mechanics_for(state: dict, player_id: str | None = None) -> dict:
         return rule_mechanics(load_mutable_rules())
     target_player_id = player_id or state.get("current_player_id")
     player = next((item for item in state["players"] if item["id"] == target_player_id), state["players"][state["current_player_index"]])
+    opponent = next((item for item in state["players"] if item["id"] != player["id"]), None)
     top_card = state["discard_pile"][-1] if state.get("discard_pile") else {}
     return rule_mechanics(
         load_mutable_rules(),
         {
             "player_id": player["id"],
             "player_name": player["name"],
+            "current_player_id": player["id"],
+            "current_player_name": player["name"],
+            "current_player_hand_count": len(player["hand"]),
+            "opponent_id": opponent["id"] if opponent else None,
+            "opponent_name": opponent["name"] if opponent else None,
+            "opponent_hand_count": len(opponent["hand"]) if opponent else None,
             "top_color": top_card.get("chosen_color") or top_card.get("color"),
             "top_value": top_card.get("value"),
+            "top_type": top_card.get("type"),
         },
     )
