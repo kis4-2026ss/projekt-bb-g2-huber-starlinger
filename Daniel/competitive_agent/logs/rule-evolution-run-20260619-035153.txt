@@ -1,0 +1,53 @@
+
+
+===== RULE CONTEXT =====
+{
+  "hand": [
+    {
+      "color": "red",
+      "value": "3",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "skip",
+      "type": "action"
+    },
+    {
+      "color": "yellow",
+      "value": "8",
+      "type": "number"
+    }
+  ],
+  "top_card": {
+    "color": "green",
+    "value": "5",
+    "type": "number"
+  },
+  "playable_indexes": [],
+  "opponent_cards_in_hand": 2,
+  "mutable_rules": {
+    "rules": []
+  }
+}
+
+
+===== MUTABLE RULE PROPOSAL =====
+{
+  "id": "daniel_finish_at_three",
+  "title": "Daniel Finish Window",
+  "description": "When Daniel-Agent has three or fewer cards, playing a card can finish the game.",
+  "type": "turn_modifier",
+  "condition": {
+    "scope": "current_player",
+    "player_name": "Daniel-Agent",
+    "current_player": {
+      "hand_count": {
+        "lte": 3
+      }
+    }
+  },
+  "effect": {
+    "win_hand_count": 3
+  }
+}
