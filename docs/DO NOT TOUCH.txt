@@ -73,7 +73,10 @@ Das wäre z.B. eine Datei wie history.jsonl, memory.json oder später rules.json
 
 	Das Modell hat ein begrenztes Kontextfenster. Nur Informationen, die im aktuellen Prompt stehen, kann es zuverlässig verwenden. Für dauerhafte Erinnerung brauchen wir eigene Dateien oder Logs.
 	
-	
+
+Die Funktion ask_ollama() ist die Schnittstelle zwischen unserem Python-Agenten und dem lokalen LLM. Sie baut eine JSON-Anfrage, sendet sie per HTTP-POST an Ollama und liest anschließend die generierte Antwort des Modells aus.
+
+
 	
 Echtes Fine-Tuning lokaler Modelle ist möglich, aber für unseren Projektstand noch nicht sinnvoll.
 Wir verbessern zuerst die Agentenarchitektur: Systemprompt, Memory, JSON-Validierung, Logging und Evaluation.
