@@ -1,0 +1,80 @@
+python installieren
+	
+	https://www.python.org/downloads/
+	
+	kontrollieren
+	python --version
+	pip --version
+
+virtuelle Umgebung im Projekt erstellen
+
+	cd "C:\GitCheckouts\KIS4 - Projekt\projekt-bb-g2-huber-starlinger"
+	python -m venv .venv
+	.\.venv\Scripts\Activate.ps1
+	python -m pip install --upgrade pip
+	
+ollama installieren
+
+	https://ollama.com/download/windows
+	-> Download
+	---> Download for Windows
+	-----> Ollama Setup ausführen
+	-------> Ollama installieren
+	
+	Kontrolle
+	ollama --version
+	-> Falls es nicht erkannt wird, powershell schließen und wieder öffnen
+		venv wieder aktivieren
+	---> .\.venv\Scripts\Activate.ps1
+	
+	Ein Modell herunterladen - in diesem fall ein kleines Modell 
+		ollama pull llama3.2
+		-> testen mit
+			ollama run llama3.2
+			
+	Ollama-Modell:
+	Du schreibst Prompt -> Modell antwortet Text
+	
+	KI-Agent:
+	Python-Code sammelt Kontext -> baut Prompt -> fragt Ollama -> prüft Antwort -> speichert Ergebnis
+	
+	Kleiner Agent wurde von Codex gebaut: agent.py, erklärung in README.md
+	
+			## Warum ist das schon ein Agent?
+
+			Ein normales `ollama run llama3.2` ist nur ein Chat mit dem Modell.
+
+			Dieser Agent ist mehr als nur Chat:
+
+			- Er hat eine feste Rolle.
+			- Er hat ein festes Ausgabeformat.
+			- Er wird von Python gesteuert.
+			- Seine Antwort wird validiert.
+			
+			Benutzereingabe
+				-> Python baut Prompt
+				-> Ollama bekommt genau diesen Prompt
+				-> Modell antwortet
+				-> Python prüft JSON
+				-> Antwort wird angezeigt
+				
+Speicher / Gedächtnis
+Es gibt drei Arten von “Speicher”:
+Modellwissen
+	Das steckt schon im Modell, z.B. Sprache, allgemeine Muster, JSON-Struktur. Das ändert sich durch eure Prompts nicht.
+
+Kontextfenster
+Das ist der Text, den das Modell bei einem einzelnen Aufruf sieht. In eurem Agenten ist das aktuell nur:
+fester System-Prompt
+aktuelle Aufgabe des Benutzers
+
+Externer Speicher
+Das wäre z.B. eine Datei wie history.jsonl, memory.json oder später rules.json. Das habt ihr im Minimal-Agenten noch nicht eingebaut.
+
+	Das Modell hat ein begrenztes Kontextfenster. Nur Informationen, die im aktuellen Prompt stehen, kann es zuverlässig verwenden. Für dauerhafte Erinnerung brauchen wir eigene Dateien oder Logs.
+	
+	
+	
+Echtes Fine-Tuning lokaler Modelle ist möglich, aber für unseren Projektstand noch nicht sinnvoll.
+Wir verbessern zuerst die Agentenarchitektur: Systemprompt, Memory, JSON-Validierung, Logging und Evaluation.
+Das verändert nicht die Modellgewichte, macht den Agenten aber praktisch deutlich stärker.

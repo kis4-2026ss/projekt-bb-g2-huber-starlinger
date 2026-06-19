@@ -1,0 +1,17 @@
+{
+  "agent_id": "daniel_agent",
+  "strategy_notes": [
+    "Legal moves are more important than risky moves.",
+    "When using wild cards, prefer colors that occur often in own hand.",
+    "If opponent has few cards, blocking and draw cards become more valuable.",
+    "In two-player UNO, reverse behaves like skip and can immediately deny the opponent a turn.",
+    "Use skip, reverse, draw_two, and wild_draw_four aggressively when the opponent is close to winning.",
+    "Save wild cards for winning, escaping bad colors, or blocking a nearly finished opponent.",
+    "When choosing a wild color, choose the color that appears most often in your remaining hand.",
+    "Prefer a playable number card that leaves you with more cards of the same color for future turns.",
+    "Declare UNO whenever playing down to one card if the server supports it.",
+    "Never risk an illegal wild_draw_four if the game context says the move is not playable."
+  ],
+  "invalid_move_count": 0,
+  "games_observed": 0
+}

@@ -1,0 +1,275 @@
+
+
+===== GAME CONTEXT =====
+{
+  "agent_id": "daniel_agent",
+  "current_turn": true,
+  "top_card": {
+    "color": "red",
+    "value": "7",
+    "type": "number"
+  },
+  "hand": [
+    {
+      "color": "red",
+      "value": "2",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "draw_two",
+      "type": "action"
+    },
+    {
+      "color": null,
+      "value": "wild",
+      "type": "wild"
+    }
+  ],
+  "playable_indexes": [
+    0,
+    2
+  ],
+  "opponent_cards_in_hand": 2,
+  "valid_colors": [
+    "red",
+    "yellow",
+    "green",
+    "blue"
+  ],
+  "allowed_actions": [
+    "play",
+    "draw",
+    "pass"
+  ]
+}
+
+
+===== MEMORY =====
+{
+  "agent_id": "daniel_agent",
+  "strategy_notes": [
+    "Legal moves are more important than risky moves.",
+    "When using wild cards, prefer colors that occur often in own hand.",
+    "If opponent has few cards, blocking and draw cards become more valuable.",
+    "In two-player UNO, reverse behaves like skip and can immediately deny the opponent a turn.",
+    "Use skip, reverse, draw_two, and wild_draw_four aggressively when the opponent is close to winning.",
+    "Save wild cards for winning, escaping bad colors, or blocking a nearly finished opponent.",
+    "When choosing a wild color, choose the color that appears most often in your remaining hand.",
+    "Prefer a playable number card that leaves you with more cards of the same color for future turns.",
+    "Declare UNO whenever playing down to one card if the server supports it.",
+    "Never risk an illegal wild_draw_four if the game context says the move is not playable."
+  ],
+  "invalid_move_count": 0,
+  "games_observed": 0
+}
+
+
+===== TACTICAL ANALYSIS =====
+{
+  "opponent_cards_in_hand": 2,
+  "color_counts": {
+    "red": 1,
+    "blue": 1
+  },
+  "preferred_wild_color": "red",
+  "tactical_flags": [
+    "opponent_near_win"
+  ],
+  "ranked_playable_moves": [
+    {
+      "card_index": 2,
+      "card": {
+        "color": null,
+        "value": "wild",
+        "type": "wild"
+      },
+      "score": 22,
+      "reasons": [
+        "controls next color"
+      ]
+    },
+    {
+      "card_index": 0,
+      "card": {
+        "color": "red",
+        "value": "2",
+        "type": "number"
+      },
+      "score": 13,
+      "reasons": [
+        "safe legal discard"
+      ]
+    }
+  ],
+  "fallback_action": "draw"
+}
+
+
+===== PROMPT SENT TO OLLAMA =====
+Du bist Daniel-Agent, ein kompetitiver UNO-Agent.
+Dein Ziel ist es, moeglichst viele Spiele gegen einen anderen Agenten zu gewinnen.
+
+Du darfst nur Entscheidungen vorschlagen. Der Server prueft spaeter, ob sie gueltig sind.
+
+Prioritaeten:
+1. Spiele immer einen legalen Gewinnzug, wenn du dadurch sofort gewinnen kannst.
+2. Wenn der Gegner nur wenige Karten hat, priorisiere Blockade: draw_two, wild_draw_four, skip oder reverse.
+3. In einem Zwei-Spieler-Spiel sind skip und reverse besonders stark, weil sie dem Gegner den Zug nehmen.
+4. Nutze Wild-Karten taktisch, um eine Farbe zu waehlen, die du selbst oft hast.
+5. Hebe Wild-Karten eher fuer kritische Situationen auf, ausser du kannst dadurch gewinnen oder den Gegner stark blockieren.
+6. Reduziere deine Handkarten, aber vermeide ungueltige Aktionen.
+7. Wenn mehrere Zahlenkarten spielbar sind, bevorzuge die Farbe, von der du danach noch weitere Karten hast.
+8. Wenn keine Karte spielbar ist, ziehe eine Karte.
+9. Gib niemals eine Aktion aus, die nicht im Kontext als erlaubt erkennbar ist.
+
+Antwortformat:
+Antworte ausschliesslich als gueltiges JSON.
+
+Schema:
+{
+  "agent_id": "daniel_agent",
+  "action": "play|draw|pass",
+  "card_index": 0,
+  "chosen_color": "red|yellow|green|blue|null",
+  "declare_uno": true,
+  "visible_reason": "kurze Begruendung fuer Menschen",
+  "confidence": 0.0
+}
+
+Regeln:
+- Keine Markdown-Ausgabe.
+- Keine Erklaerung ausserhalb des JSON.
+- visible_reason ist keine versteckte Gedankenkette, sondern nur eine kurze sichtbare Begruendung.
+- Wenn action draw oder pass ist, muss card_index null sein.
+- Wenn keine Farbe gewaehlt werden muss, ist chosen_color null.
+
+Memory:
+{
+  "agent_id": "daniel_agent",
+  "strategy_notes": [
+    "Legal moves are more important than risky moves.",
+    "When using wild cards, prefer colors that occur often in own hand.",
+    "If opponent has few cards, blocking and draw cards become more valuable.",
+    "In two-player UNO, reverse behaves like skip and can immediately deny the opponent a turn.",
+    "Use skip, reverse, draw_two, and wild_draw_four aggressively when the opponent is close to winning.",
+    "Save wild cards for winning, escaping bad colors, or blocking a nearly finished opponent.",
+    "When choosing a wild color, choose the color that appears most often in your remaining hand.",
+    "Prefer a playable number card that leaves you with more cards of the same color for future turns.",
+    "Declare UNO whenever playing down to one card if the server supports it.",
+    "Never risk an illegal wild_draw_four if the game context says the move is not playable."
+  ],
+  "invalid_move_count": 0,
+  "games_observed": 0
+}
+
+Taktische Voranalyse aus Python:
+{
+  "opponent_cards_in_hand": 2,
+  "color_counts": {
+    "red": 1,
+    "blue": 1
+  },
+  "preferred_wild_color": "red",
+  "tactical_flags": [
+    "opponent_near_win"
+  ],
+  "ranked_playable_moves": [
+    {
+      "card_index": 2,
+      "card": {
+        "color": null,
+        "value": "wild",
+        "type": "wild"
+      },
+      "score": 22,
+      "reasons": [
+        "controls next color"
+      ]
+    },
+    {
+      "card_index": 0,
+      "card": {
+        "color": "red",
+        "value": "2",
+        "type": "number"
+      },
+      "score": 13,
+      "reasons": [
+        "safe legal discard"
+      ]
+    }
+  ],
+  "fallback_action": "draw"
+}
+
+Aktueller Spielkontext:
+{
+  "agent_id": "daniel_agent",
+  "current_turn": true,
+  "top_card": {
+    "color": "red",
+    "value": "7",
+    "type": "number"
+  },
+  "hand": [
+    {
+      "color": "red",
+      "value": "2",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "draw_two",
+      "type": "action"
+    },
+    {
+      "color": null,
+      "value": "wild",
+      "type": "wild"
+    }
+  ],
+  "playable_indexes": [
+    0,
+    2
+  ],
+  "opponent_cards_in_hand": 2,
+  "valid_colors": [
+    "red",
+    "yellow",
+    "green",
+    "blue"
+  ],
+  "allowed_actions": [
+    "play",
+    "draw",
+    "pass"
+  ]
+}
+
+Waehle jetzt die beste Aktion.
+Nutze die taktische Voranalyse als Hilfe, aber beachte immer den Spielkontext und das erlaubte JSON-Schema.
+
+
+===== RAW MODEL RESPONSE 1 =====
+{
+  "agent_id": "daniel_agent",
+  "action": "play",
+  "card_index": 2,
+  "chosen_color": "red",
+  "declare_uno": false,
+  "visible_reason": "Nächste Farbe ist rote.",
+  "confidence": 0.8
+}
+
+
+===== VALID DECISION =====
+{
+  "agent_id": "daniel_agent",
+  "action": "play",
+  "card_index": 2,
+  "chosen_color": "red",
+  "declare_uno": false,
+  "visible_reason": "Nächste Farbe ist rote.",
+  "confidence": 0.8
+}
