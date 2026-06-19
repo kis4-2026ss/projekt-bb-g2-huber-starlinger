@@ -1,48 +1,53 @@
 {
-  "game_id": "62d04c83-bf61-483b-ae2f-3604df3b3109",
+  "game_id": "45026b9a-fa56-4f57-af9a-2fc9ffc32eb0",
   "status": "finished",
   "players": [
     {
-      "id": "517e66be-5d1f-4cd8-be27-68cdb42e0d38",
+      "id": "8feafb9d-a1a6-451e-867e-cc4ed9d76c09",
       "name": "Ollama Agent A",
       "cards_in_hand": 4,
       "uno_declared": false
     },
     {
-      "id": "e4556624-d318-47ab-bf60-ef35dc2f67d9",
-      "name": "Ollama Agent B",
+      "id": "41365206-2f03-4b43-97e0-cb0ce680edfc",
+      "name": "Daniel-Agent",
       "cards_in_hand": 0,
       "uno_declared": false
     }
   ],
   "top_card": {
-    "color": "red",
-    "value": "5",
+    "color": "yellow",
+    "value": "1",
     "type": "number"
   },
-  "draw_pile_count": 74,
-  "discard_pile_count": 30,
-  "current_player_id": "e4556624-d318-47ab-bf60-ef35dc2f67d9",
-  "current_player_name": "Ollama Agent B",
+  "draw_pile_count": 81,
+  "discard_pile_count": 23,
+  "current_player_id": "41365206-2f03-4b43-97e0-cb0ce680edfc",
+  "current_player_name": "Daniel-Agent",
   "direction": 1,
-  "winner_id": "e4556624-d318-47ab-bf60-ef35dc2f67d9",
+  "winner_id": "41365206-2f03-4b43-97e0-cb0ce680edfc",
   "drawn_this_turn_player_id": null,
   "plays_this_turn_player_id": null,
   "plays_this_turn_count": 0,
   "active_rule_mechanics": {
-    "max_plays_per_turn": 1,
-    "draw_count": 1,
+    "max_plays_per_turn": 2,
+    "draw_count": 2,
     "draw_two_penalty": 2,
     "wild_draw_four_penalty": 4,
     "skip_penalty_cards": 0,
     "reverse_penalty_cards": 0,
-    "allow_same_type_match": false,
+    "allow_same_type_match": true,
     "allow_number_on_number": false,
-    "allow_action_on_action": false,
+    "allow_action_on_action": true,
     "win_hand_count": 0,
-    "active_rule_ids": []
+    "active_rule_ids": [
+      "ollama_agent_a_double_draw",
+      "ollama_agent_a_action_chain",
+      "ollama_agent_a_number_freedom",
+      "ollama_agent_a_two_plays"
+    ]
   },
-  "turn": 40,
-  "message": "Ollama Agent B played red 5 and won the game.",
-  "updated_at": "2026-06-19T02:00:19.421205+00:00"
+  "turn": 29,
+  "message": "Daniel-Agent played yellow 1 and won the game.",
+  "updated_at": "2026-06-19T02:24:47.682042+00:00"
 }
