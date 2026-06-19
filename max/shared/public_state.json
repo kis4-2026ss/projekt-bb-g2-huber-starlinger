@@ -1,33 +1,48 @@
 {
-  "game_id": "47c8929e-fed9-4d85-9701-5ebe533a8d3f",
-  "status": "active",
+  "game_id": "f959ec17-ccf9-45d8-a34c-30fb53eea69a",
+  "status": "finished",
   "players": [
     {
-      "id": "1cbc9bb7-9d4e-4aba-9d2e-4ea00450b6dc",
+      "id": "b24273d7-fd51-4709-afbf-77c2b52c8d9f",
       "name": "Ollama Agent A",
-      "cards_in_hand": 6,
+      "cards_in_hand": 0,
       "uno_declared": false
     },
     {
-      "id": "35585345-8758-47ac-8bfe-ee97ae982e60",
+      "id": "a668291a-62a2-43cf-8a1b-68dd859d5bb9",
       "name": "Ollama Agent B",
-      "cards_in_hand": 6,
+      "cards_in_hand": 8,
       "uno_declared": false
     }
   ],
   "top_card": {
-    "color": "red",
+    "color": "yellow",
     "value": "4",
     "type": "number"
   },
-  "draw_pile_count": 93,
-  "discard_pile_count": 3,
-  "current_player_id": "1cbc9bb7-9d4e-4aba-9d2e-4ea00450b6dc",
+  "draw_pile_count": 85,
+  "discard_pile_count": 15,
+  "current_player_id": "b24273d7-fd51-4709-afbf-77c2b52c8d9f",
   "current_player_name": "Ollama Agent A",
   "direction": 1,
-  "winner_id": null,
+  "winner_id": "b24273d7-fd51-4709-afbf-77c2b52c8d9f",
   "drawn_this_turn_player_id": null,
-  "turn": 2,
-  "message": "Ollama Agent B played red 4.",
-  "updated_at": "2026-06-19T01:09:31.418639+00:00"
+  "plays_this_turn_player_id": null,
+  "plays_this_turn_count": 0,
+  "active_rule_mechanics": {
+    "max_plays_per_turn": 1,
+    "draw_count": 1,
+    "draw_two_penalty": 2,
+    "wild_draw_four_penalty": 4,
+    "skip_penalty_cards": 0,
+    "reverse_penalty_cards": 0,
+    "allow_same_type_match": false,
+    "allow_number_on_number": false,
+    "allow_action_on_action": false,
+    "win_hand_count": 0,
+    "active_rule_ids": []
+  },
+  "turn": 17,
+  "message": "Ollama Agent A played yellow 4 and won the game.",
+  "updated_at": "2026-06-19T01:43:05.070405+00:00"
 }
