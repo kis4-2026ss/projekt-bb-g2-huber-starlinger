@@ -1,0 +1,163 @@
+{
+  "base_rules": {
+    "game": "UNO",
+    "version": 1,
+    "player_count": 2,
+    "starting_hand_size": 7,
+    "valid_colors": [
+      "red",
+      "yellow",
+      "green",
+      "blue"
+    ],
+    "card_types": {
+      "number": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9"
+      ],
+      "action": [
+        "skip",
+        "reverse",
+        "draw_two"
+      ],
+      "wild": [
+        "wild",
+        "wild_draw_four"
+      ]
+    },
+    "matching": [
+      "A non-wild card may be played when its color or value matches the top discard card.",
+      "A wild card may be played on any top discard card."
+    ],
+    "actions": {
+      "skip": "Skips the opponent. In a two-player game, the same player gets the next turn.",
+      "reverse": "Acts like skip in this two-player implementation.",
+      "draw_two": "Opponent draws two cards and loses their turn.",
+      "wild": "Player chooses the next active color.",
+      "wild_draw_four": "Opponent draws four cards and loses their turn; player chooses the next active color."
+    },
+    "turn_actions": [
+      "play",
+      "draw",
+      "pass"
+    ],
+    "win_condition": "A player wins immediately after playing their final card."
+  },
+  "mutable_rules": {
+    "version": 7,
+    "description": "Agent-created rules. These may be changed during a game.",
+    "rules": [
+      {
+        "id": "ollama_agent_a_two_plays",
+        "title": "Two Plays Per Turn",
+        "description": "Each player may play up to two cards before the turn advances.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "max_plays_per_turn": 2
+        },
+        "created_by": "bb4ef712-c864-4da3-9069-1f8d48e27093",
+        "created_at": "2026-06-20T11:19:45.514138+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "ollama_agent_a_double_draw",
+        "title": "Double Draw",
+        "description": "Drawing from the pile now draws two cards.",
+        "type": "draw_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "draw_count": 2
+        },
+        "created_by": "bb4ef712-c864-4da3-9069-1f8d48e27093",
+        "created_at": "2026-06-20T11:19:48.714470+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "ollama_agent_b_two_plays",
+        "title": "Two Plays Per Turn",
+        "description": "Each player may play up to two cards before the turn advances.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "max_plays_per_turn": 2
+        },
+        "created_by": "1dc12016-d495-4893-a9c6-f5f2c725c156",
+        "created_at": "2026-06-20T11:19:52.792637+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "ollama_agent_b_double_draw",
+        "title": "Double Draw",
+        "description": "Drawing from the pile now draws two cards.",
+        "type": "draw_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "draw_count": 2
+        },
+        "created_by": "1dc12016-d495-4893-a9c6-f5f2c725c156",
+        "created_at": "2026-06-20T11:19:57.026743+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "ollama_agent_a_action_chain",
+        "title": "Action Chain",
+        "description": "Action cards may be played on other action cards.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "allow_action_on_action": true
+        },
+        "created_by": "bb4ef712-c864-4da3-9069-1f8d48e27093",
+        "created_at": "2026-06-20T11:20:00.439181+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "ollama_agent_b_action_chain",
+        "title": "Action Chain",
+        "description": "Action cards may be played on other action cards.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "allow_action_on_action": true
+        },
+        "created_by": "1dc12016-d495-4893-a9c6-f5f2c725c156",
+        "created_at": "2026-06-20T11:20:04.514035+00:00",
+        "modified_by": null,
+        "modified_at": null
+      }
+    ]
+  },
+  "note": "Only mutable_rules may be changed by agents. base_rules are immutable."
+}

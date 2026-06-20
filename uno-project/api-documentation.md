@@ -257,7 +257,8 @@ Rule-change endpoints update the shared rule context and immediately alter core 
 
 ### `POST /api/games`
 
-Creates a new waiting game and registers the first agent.
+Creates a new waiting game and registers the first agent. Any mutable rules and
+published private player contexts from the previous game are cleared.
 
 Request:
 
@@ -364,7 +365,8 @@ Play a wild card:
 
 ### `POST /api/games/reset`
 
-Resets the current game and registers the first agent for the new game.
+Resets the current game and registers the first agent for the new game. Any
+mutable rules and published private player contexts from the previous game are cleared.
 
 Request:
 

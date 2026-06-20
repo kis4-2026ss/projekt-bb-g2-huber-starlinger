@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from .engine import UnoError, apply_action, join_game, new_game, observer_view, player_view, public_view
 from .models import AddRuleRequest, ApiMessage, CreateGameRequest, JoinGameRequest, ModifyRuleRequest, PlayerActionRequest, RemoveRuleRequest
 from .rule_manager import RuleChangeError, add_mutable_rule, modify_mutable_rule, remove_mutable_rule, rule_mechanics
-from .storage import ensure_storage, load_base_rules, load_mutable_rules, load_rules, load_state, save_mutable_rules, save_state
+from .storage import ensure_storage, load_base_rules, load_mutable_rules, load_rules, load_state, save_mutable_rules, save_new_game, save_state
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 STATE_LOCK = Lock()
@@ -100,7 +100,7 @@ def remove_rule(rule_id: str, request: RemoveRuleRequest) -> dict:
 def create_game(request: CreateGameRequest) -> dict:
     with STATE_LOCK:
         state = new_game(request.player_name)
-        save_state(
+        save_new_game(
             state,
             event={"type": "game_created", "player_name": request.player_name, "game_id": state["game_id"]},
         )
@@ -166,7 +166,7 @@ def action(request: PlayerActionRequest) -> dict:
 def reset(request: CreateGameRequest) -> dict:
     with STATE_LOCK:
         state = new_game(request.player_name)
-        save_state(
+        save_new_game(
             state,
             event={"type": "game_reset", "player_name": request.player_name, "game_id": state["game_id"]},
         )

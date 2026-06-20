@@ -45,6 +45,19 @@ def save_state(state: dict[str, Any], event: dict[str, Any] | None = None) -> di
     return state
 
 
+def save_new_game(state: dict[str, Any], event: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Persist a new game with no rules or private views carried over from a prior game."""
+    fresh_mutable_rules = default_mutable_rules()
+    _write_json(MUTABLE_RULES_PATH, fresh_mutable_rules)
+    _write_json(RULES_PATH, combined_rules(fresh_mutable_rules))
+
+    # Player-specific files contain private hands, so they must not survive a new game.
+    for player_context_path in SHARED_DIR.glob("player_*.json"):
+        player_context_path.unlink()
+
+    return save_state(state, event)
+
+
 def load_rules() -> dict[str, Any]:
     ensure_storage()
     return json.loads(RULES_PATH.read_text(encoding="utf-8"))
