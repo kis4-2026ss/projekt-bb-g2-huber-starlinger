@@ -1,0 +1,108 @@
+{
+  "version": 7,
+  "description": "Agent-created rules. These may be changed during a game.",
+  "rules": [
+    {
+      "id": "ollama_agent_a_two_plays",
+      "title": "Two Plays Per Turn",
+      "description": "Each player may play up to two cards before the turn advances.",
+      "type": "turn_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "all"
+      },
+      "effect": {
+        "max_plays_per_turn": 2
+      },
+      "created_by": "bb4ef712-c864-4da3-9069-1f8d48e27093",
+      "created_at": "2026-06-20T11:19:45.514138+00:00",
+      "modified_by": null,
+      "modified_at": null
+    },
+    {
+      "id": "ollama_agent_a_double_draw",
+      "title": "Double Draw",
+      "description": "Drawing from the pile now draws two cards.",
+      "type": "draw_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "all"
+      },
+      "effect": {
+        "draw_count": 2
+      },
+      "created_by": "bb4ef712-c864-4da3-9069-1f8d48e27093",
+      "created_at": "2026-06-20T11:19:48.714470+00:00",
+      "modified_by": null,
+      "modified_at": null
+    },
+    {
+      "id": "ollama_agent_b_two_plays",
+      "title": "Two Plays Per Turn",
+      "description": "Each player may play up to two cards before the turn advances.",
+      "type": "turn_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "all"
+      },
+      "effect": {
+        "max_plays_per_turn": 2
+      },
+      "created_by": "1dc12016-d495-4893-a9c6-f5f2c725c156",
+      "created_at": "2026-06-20T11:19:52.792637+00:00",
+      "modified_by": null,
+      "modified_at": null
+    },
+    {
+      "id": "ollama_agent_b_double_draw",
+      "title": "Double Draw",
+      "description": "Drawing from the pile now draws two cards.",
+      "type": "draw_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "all"
+      },
+      "effect": {
+        "draw_count": 2
+      },
+      "created_by": "1dc12016-d495-4893-a9c6-f5f2c725c156",
+      "created_at": "2026-06-20T11:19:57.026743+00:00",
+      "modified_by": null,
+      "modified_at": null
+    },
+    {
+      "id": "ollama_agent_a_action_chain",
+      "title": "Action Chain",
+      "description": "Action cards may be played on other action cards.",
+      "type": "turn_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "all"
+      },
+      "effect": {
+        "allow_action_on_action": true
+      },
+      "created_by": "bb4ef712-c864-4da3-9069-1f8d48e27093",
+      "created_at": "2026-06-20T11:20:00.439181+00:00",
+      "modified_by": null,
+      "modified_at": null
+    },
+    {
+      "id": "ollama_agent_b_action_chain",
+      "title": "Action Chain",
+      "description": "Action cards may be played on other action cards.",
+      "type": "turn_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "all"
+      },
+      "effect": {
+        "allow_action_on_action": true
+      },
+      "created_by": "1dc12016-d495-4893-a9c6-f5f2c725c156",
+      "created_at": "2026-06-20T11:20:04.514035+00:00",
+      "modified_by": null,
+      "modified_at": null
+    }
+  ]
+}

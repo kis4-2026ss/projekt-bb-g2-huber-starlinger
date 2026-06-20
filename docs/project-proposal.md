@@ -3,7 +3,7 @@
 ### Project Title
 **Emergent Rule Evolution Game with Autonomous AI Agents**
 
-![title-pic](KI-Uno.png)
+![title-pic](images/KI-Uno.png)
 
 ---
 
@@ -187,4 +187,4 @@ The project will be considered successful if:
 
 # Development / Architecture Diagram
 
-![structure](KI-Agenten-Struktur.png)
+![structure](images/KI-Agenten-Struktur.png)

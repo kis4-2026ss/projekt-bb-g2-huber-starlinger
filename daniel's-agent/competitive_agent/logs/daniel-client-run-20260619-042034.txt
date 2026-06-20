@@ -1,0 +1,3649 @@
+
+
+===== CLIENT START =====
+server=http://127.0.0.1:8000
+mode=join
+player_id=826393a6-75ed-4598-831d-b59d8d1494b0
+enable_rules=True
+rule_frequency=1
+turn_action_mode=choose-one
+
+
+===== RULE CONTEXT =====
+{
+  "player_id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+  "player_name": "Daniel-Agent",
+  "turn": 1,
+  "hand": [
+    {
+      "color": "red",
+      "value": "0",
+      "type": "number"
+    },
+    {
+      "color": "green",
+      "value": "6",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "1",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "draw_two",
+      "type": "action"
+    },
+    {
+      "color": "green",
+      "value": "2",
+      "type": "number"
+    },
+    {
+      "color": "green",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "5",
+      "type": "number"
+    }
+  ],
+  "top_card": {
+    "color": "yellow",
+    "value": "6",
+    "type": "number"
+  },
+  "playable_indexes": [
+    1
+  ],
+  "opponent_cards_in_hand": 7,
+  "mutable_rules": {
+    "version": 5,
+    "description": "Agent-created rules. These may be changed during a game.",
+    "rules": [
+      {
+        "id": "ollama_agent_a_two_plays",
+        "title": "Two Plays Per Turn",
+        "description": "Each player may play up to two cards before the turn advances.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "max_plays_per_turn": 2
+        },
+        "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+        "created_at": "2026-06-19T02:20:34.267205+00:00",
+        "modified_by": null,
+        "modified_at": null
+      }
+    ],
+    "last_removed_rule": {
+      "id": "daniel_smoke_rule",
+      "removed_by": "b728b548-9a05-42ae-8754-0b6767a099bf",
+      "removed_at": "2026-06-19T02:13:56.076988+00:00"
+    }
+  },
+  "active_rule_mechanics": {
+    "max_plays_per_turn": 2,
+    "draw_count": 1,
+    "draw_two_penalty": 2,
+    "wild_draw_four_penalty": 4,
+    "skip_penalty_cards": 0,
+    "reverse_penalty_cards": 0,
+    "allow_same_type_match": false,
+    "allow_number_on_number": false,
+    "allow_action_on_action": false,
+    "win_hand_count": 0,
+    "active_rule_ids": [
+      "ollama_agent_a_two_plays"
+    ]
+  },
+  "message": "Ollama Agent A changed the mutable rules."
+}
+
+
+===== MUTABLE RULE PROPOSAL =====
+{
+  "operation": "none",
+  "rule": null,
+  "visible_reason": "No useful non-duplicate mutable rule available."
+}
+
+
+===== RULE PROPOSAL =====
+{
+  "operation": "none",
+  "rule": null,
+  "visible_reason": "No useful non-duplicate mutable rule available."
+}
+
+
+===== TURN ACTION CHOICE =====
+game
+
+
+===== GAME CONTEXT =====
+{
+  "agent_id": "daniel_agent",
+  "current_turn": true,
+  "top_card": {
+    "color": "yellow",
+    "value": "6",
+    "type": "number"
+  },
+  "hand": [
+    {
+      "color": "red",
+      "value": "0",
+      "type": "number"
+    },
+    {
+      "color": "green",
+      "value": "6",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "1",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "draw_two",
+      "type": "action"
+    },
+    {
+      "color": "green",
+      "value": "2",
+      "type": "number"
+    },
+    {
+      "color": "green",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "5",
+      "type": "number"
+    }
+  ],
+  "playable_indexes": [
+    1
+  ],
+  "opponent_cards_in_hand": 7,
+  "valid_colors": [
+    "red",
+    "yellow",
+    "green",
+    "blue"
+  ],
+  "allowed_actions": [
+    "play",
+    "draw"
+  ],
+  "status": "active",
+  "turn": 1,
+  "message": "Ollama Agent A changed the mutable rules.",
+  "has_drawn_this_turn": false
+}
+
+
+===== MEMORY =====
+{
+  "agent_id": "daniel_agent",
+  "strategy_notes": [
+    "Legal moves are more important than risky moves.",
+    "When using wild cards, prefer colors that occur often in own hand.",
+    "If opponent has few cards, blocking and draw cards become more valuable.",
+    "In two-player UNO, reverse behaves like skip and can immediately deny the opponent a turn.",
+    "Use skip, reverse, draw_two, and wild_draw_four aggressively when the opponent is close to winning.",
+    "Save wild cards for winning, escaping bad colors, or blocking a nearly finished opponent.",
+    "When choosing a wild color, choose the color that appears most often in your remaining hand.",
+    "Prefer a playable number card that leaves you with more cards of the same color for future turns.",
+    "Declare UNO whenever playing down to one card if the server supports it.",
+    "Never risk an illegal wild_draw_four if the game context says the move is not playable."
+  ],
+  "invalid_move_count": 0,
+  "games_observed": 0
+}
+
+
+===== TACTICAL ANALYSIS =====
+{
+  "opponent_cards_in_hand": 7,
+  "color_counts": {
+    "red": 3,
+    "green": 3,
+    "blue": 1
+  },
+  "preferred_wild_color": "red",
+  "tactical_flags": [],
+  "ranked_playable_moves": [
+    {
+      "card_index": 1,
+      "card": {
+        "color": "green",
+        "value": "6",
+        "type": "number"
+      },
+      "score": 16,
+      "reasons": [
+        "keeps strong green color path",
+        "safe legal discard"
+      ]
+    }
+  ],
+  "fallback_action": "draw"
+}
+
+
+===== PROMPT SENT TO OLLAMA =====
+Du bist Daniel-Agent, ein kompetitiver UNO-Agent.
+Dein Ziel ist es, moeglichst viele Spiele gegen einen anderen Agenten zu gewinnen.
+
+Du darfst nur Entscheidungen vorschlagen. Der Server prueft spaeter, ob sie gueltig sind.
+
+Prioritaeten:
+1. Spiele immer einen legalen Gewinnzug, wenn du dadurch sofort gewinnen kannst.
+2. Wenn der Gegner nur wenige Karten hat, priorisiere Blockade: draw_two, wild_draw_four, skip oder reverse.
+3. In einem Zwei-Spieler-Spiel sind skip und reverse besonders stark, weil sie dem Gegner den Zug nehmen.
+4. Nutze Wild-Karten taktisch, um eine Farbe zu waehlen, die du selbst oft hast.
+5. Hebe Wild-Karten eher fuer kritische Situationen auf, ausser du kannst dadurch gewinnen oder den Gegner stark blockieren.
+6. Reduziere deine Handkarten, aber vermeide ungueltige Aktionen.
+7. Wenn mehrere Zahlenkarten spielbar sind, bevorzuge die Farbe, von der du danach noch weitere Karten hast.
+8. Wenn keine Karte spielbar ist, ziehe eine Karte.
+9. Gib niemals eine Aktion aus, die nicht im Kontext als erlaubt erkennbar ist.
+
+Antwortformat:
+Antworte ausschliesslich als gueltiges JSON.
+
+Schema:
+{
+  "agent_id": "daniel_agent",
+  "action": "play|draw|pass",
+  "card_index": 0,
+  "chosen_color": "red|yellow|green|blue|null",
+  "declare_uno": true,
+  "visible_reason": "kurze Begruendung fuer Menschen",
+  "confidence": 0.0
+}
+
+Regeln:
+- Keine Markdown-Ausgabe.
+- Keine Erklaerung ausserhalb des JSON.
+- visible_reason ist keine versteckte Gedankenkette, sondern nur eine kurze sichtbare Begruendung.
+- Wenn action draw oder pass ist, muss card_index null sein.
+- Wenn keine Farbe gewaehlt werden muss, ist chosen_color null.
+
+Memory:
+{
+  "agent_id": "daniel_agent",
+  "strategy_notes": [
+    "Legal moves are more important than risky moves.",
+    "When using wild cards, prefer colors that occur often in own hand.",
+    "If opponent has few cards, blocking and draw cards become more valuable.",
+    "In two-player UNO, reverse behaves like skip and can immediately deny the opponent a turn.",
+    "Use skip, reverse, draw_two, and wild_draw_four aggressively when the opponent is close to winning.",
+    "Save wild cards for winning, escaping bad colors, or blocking a nearly finished opponent.",
+    "When choosing a wild color, choose the color that appears most often in your remaining hand.",
+    "Prefer a playable number card that leaves you with more cards of the same color for future turns.",
+    "Declare UNO whenever playing down to one card if the server supports it.",
+    "Never risk an illegal wild_draw_four if the game context says the move is not playable."
+  ],
+  "invalid_move_count": 0,
+  "games_observed": 0
+}
+
+Taktische Voranalyse aus Python:
+{
+  "opponent_cards_in_hand": 7,
+  "color_counts": {
+    "red": 3,
+    "green": 3,
+    "blue": 1
+  },
+  "preferred_wild_color": "red",
+  "tactical_flags": [],
+  "ranked_playable_moves": [
+    {
+      "card_index": 1,
+      "card": {
+        "color": "green",
+        "value": "6",
+        "type": "number"
+      },
+      "score": 16,
+      "reasons": [
+        "keeps strong green color path",
+        "safe legal discard"
+      ]
+    }
+  ],
+  "fallback_action": "draw"
+}
+
+Aktueller Spielkontext:
+{
+  "agent_id": "daniel_agent",
+  "current_turn": true,
+  "top_card": {
+    "color": "yellow",
+    "value": "6",
+    "type": "number"
+  },
+  "hand": [
+    {
+      "color": "red",
+      "value": "0",
+      "type": "number"
+    },
+    {
+      "color": "green",
+      "value": "6",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "1",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "draw_two",
+      "type": "action"
+    },
+    {
+      "color": "green",
+      "value": "2",
+      "type": "number"
+    },
+    {
+      "color": "green",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "5",
+      "type": "number"
+    }
+  ],
+  "playable_indexes": [
+    1
+  ],
+  "opponent_cards_in_hand": 7,
+  "valid_colors": [
+    "red",
+    "yellow",
+    "green",
+    "blue"
+  ],
+  "allowed_actions": [
+    "play",
+    "draw"
+  ],
+  "status": "active",
+  "turn": 1,
+  "message": "Ollama Agent A changed the mutable rules.",
+  "has_drawn_this_turn": false
+}
+
+Waehle jetzt die beste Aktion.
+Nutze die taktische Voranalyse als Hilfe, aber beachte immer den Spielkontext und das erlaubte JSON-Schema.
+
+
+===== DECISION FALLBACK =====
+HTTPError: HTTP Error 404: Not Found
+
+
+===== FALLBACK DECISION =====
+{
+  "agent_id": "daniel_agent",
+  "action": "play",
+  "card_index": 1,
+  "chosen_color": null,
+  "declare_uno": false,
+  "visible_reason": "Fallback: best ranked legal card. Reasons: keeps strong green color path, safe legal discard",
+  "confidence": 0.5
+}
+
+
+===== API ACTION =====
+{
+  "action": "play",
+  "card_index": 1,
+  "chosen_color": null,
+  "declare_uno": false
+}
+
+
+===== SERVER RESULT =====
+{
+  "game_id": "bed996e8-cb00-4052-b0b4-d3afdb6a3fca",
+  "status": "active",
+  "players": [
+    {
+      "id": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+      "name": "Ollama Agent A",
+      "cards_in_hand": 7,
+      "uno_declared": false
+    },
+    {
+      "id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+      "name": "Daniel-Agent",
+      "cards_in_hand": 6,
+      "uno_declared": false
+    }
+  ],
+  "top_card": {
+    "color": "green",
+    "value": "6",
+    "type": "number"
+  },
+  "draw_pile_count": 93,
+  "discard_pile_count": 2,
+  "current_player_id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+  "current_player_name": "Daniel-Agent",
+  "direction": 1,
+  "winner_id": null,
+  "drawn_this_turn_player_id": null,
+  "plays_this_turn_player_id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+  "plays_this_turn_count": 1,
+  "active_rule_mechanics": {
+    "max_plays_per_turn": 2,
+    "draw_count": 1,
+    "draw_two_penalty": 2,
+    "wild_draw_four_penalty": 4,
+    "skip_penalty_cards": 0,
+    "reverse_penalty_cards": 0,
+    "allow_same_type_match": false,
+    "allow_number_on_number": false,
+    "allow_action_on_action": false,
+    "win_hand_count": 0,
+    "active_rule_ids": [
+      "ollama_agent_a_two_plays"
+    ]
+  },
+  "turn": 2,
+  "message": "Daniel-Agent played green 6. They may play again.",
+  "updated_at": "2026-06-19T02:20:35.271909+00:00",
+  "you": {
+    "id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+    "name": "Daniel-Agent",
+    "hand": [
+      {
+        "color": "red",
+        "value": "0",
+        "type": "number"
+      },
+      {
+        "color": "blue",
+        "value": "1",
+        "type": "number"
+      },
+      {
+        "color": "red",
+        "value": "draw_two",
+        "type": "action"
+      },
+      {
+        "color": "green",
+        "value": "2",
+        "type": "number"
+      },
+      {
+        "color": "green",
+        "value": "9",
+        "type": "number"
+      },
+      {
+        "color": "red",
+        "value": "5",
+        "type": "number"
+      }
+    ],
+    "is_current_turn": true,
+    "has_drawn_this_turn": false,
+    "plays_this_turn_count": 1,
+    "remaining_plays_this_turn": 1
+  },
+  "playable_indexes": [
+    3,
+    4
+  ]
+}
+
+
+===== RULE CONTEXT =====
+{
+  "player_id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+  "player_name": "Daniel-Agent",
+  "turn": 2,
+  "hand": [
+    {
+      "color": "red",
+      "value": "0",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "1",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "draw_two",
+      "type": "action"
+    },
+    {
+      "color": "green",
+      "value": "2",
+      "type": "number"
+    },
+    {
+      "color": "green",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "5",
+      "type": "number"
+    }
+  ],
+  "top_card": {
+    "color": "green",
+    "value": "6",
+    "type": "number"
+  },
+  "playable_indexes": [
+    3,
+    4
+  ],
+  "opponent_cards_in_hand": 7,
+  "mutable_rules": {
+    "version": 5,
+    "description": "Agent-created rules. These may be changed during a game.",
+    "rules": [
+      {
+        "id": "ollama_agent_a_two_plays",
+        "title": "Two Plays Per Turn",
+        "description": "Each player may play up to two cards before the turn advances.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "max_plays_per_turn": 2
+        },
+        "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+        "created_at": "2026-06-19T02:20:34.267205+00:00",
+        "modified_by": null,
+        "modified_at": null
+      }
+    ],
+    "last_removed_rule": {
+      "id": "daniel_smoke_rule",
+      "removed_by": "b728b548-9a05-42ae-8754-0b6767a099bf",
+      "removed_at": "2026-06-19T02:13:56.076988+00:00"
+    }
+  },
+  "active_rule_mechanics": {
+    "max_plays_per_turn": 2,
+    "draw_count": 1,
+    "draw_two_penalty": 2,
+    "wild_draw_four_penalty": 4,
+    "skip_penalty_cards": 0,
+    "reverse_penalty_cards": 0,
+    "allow_same_type_match": false,
+    "allow_number_on_number": false,
+    "allow_action_on_action": false,
+    "win_hand_count": 0,
+    "active_rule_ids": [
+      "ollama_agent_a_two_plays"
+    ]
+  },
+  "message": "Daniel-Agent played green 6. They may play again."
+}
+
+
+===== MUTABLE RULE PROPOSAL =====
+{
+  "operation": "none",
+  "rule": null,
+  "visible_reason": "No useful non-duplicate mutable rule available."
+}
+
+
+===== RULE PROPOSAL =====
+{
+  "operation": "none",
+  "rule": null,
+  "visible_reason": "No useful non-duplicate mutable rule available."
+}
+
+
+===== TURN ACTION CHOICE =====
+game
+
+
+===== GAME CONTEXT =====
+{
+  "agent_id": "daniel_agent",
+  "current_turn": true,
+  "top_card": {
+    "color": "green",
+    "value": "6",
+    "type": "number"
+  },
+  "hand": [
+    {
+      "color": "red",
+      "value": "0",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "1",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "draw_two",
+      "type": "action"
+    },
+    {
+      "color": "green",
+      "value": "2",
+      "type": "number"
+    },
+    {
+      "color": "green",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "5",
+      "type": "number"
+    }
+  ],
+  "playable_indexes": [
+    3,
+    4
+  ],
+  "opponent_cards_in_hand": 7,
+  "valid_colors": [
+    "red",
+    "yellow",
+    "green",
+    "blue"
+  ],
+  "allowed_actions": [
+    "play",
+    "draw"
+  ],
+  "status": "active",
+  "turn": 2,
+  "message": "Daniel-Agent played green 6. They may play again.",
+  "has_drawn_this_turn": false
+}
+
+
+===== MEMORY =====
+{
+  "agent_id": "daniel_agent",
+  "strategy_notes": [
+    "Legal moves are more important than risky moves.",
+    "When using wild cards, prefer colors that occur often in own hand.",
+    "If opponent has few cards, blocking and draw cards become more valuable.",
+    "In two-player UNO, reverse behaves like skip and can immediately deny the opponent a turn.",
+    "Use skip, reverse, draw_two, and wild_draw_four aggressively when the opponent is close to winning.",
+    "Save wild cards for winning, escaping bad colors, or blocking a nearly finished opponent.",
+    "When choosing a wild color, choose the color that appears most often in your remaining hand.",
+    "Prefer a playable number card that leaves you with more cards of the same color for future turns.",
+    "Declare UNO whenever playing down to one card if the server supports it.",
+    "Never risk an illegal wild_draw_four if the game context says the move is not playable."
+  ],
+  "invalid_move_count": 0,
+  "games_observed": 0
+}
+
+
+===== TACTICAL ANALYSIS =====
+{
+  "opponent_cards_in_hand": 7,
+  "color_counts": {
+    "red": 3,
+    "blue": 1,
+    "green": 2
+  },
+  "preferred_wild_color": "red",
+  "tactical_flags": [],
+  "ranked_playable_moves": [
+    {
+      "card_index": 3,
+      "card": {
+        "color": "green",
+        "value": "2",
+        "type": "number"
+      },
+      "score": 15,
+      "reasons": [
+        "keeps strong green color path",
+        "safe legal discard"
+      ]
+    },
+    {
+      "card_index": 4,
+      "card": {
+        "color": "green",
+        "value": "9",
+        "type": "number"
+      },
+      "score": 15,
+      "reasons": [
+        "keeps strong green color path",
+        "safe legal discard"
+      ]
+    }
+  ],
+  "fallback_action": "draw"
+}
+
+
+===== PROMPT SENT TO OLLAMA =====
+Du bist Daniel-Agent, ein kompetitiver UNO-Agent.
+Dein Ziel ist es, moeglichst viele Spiele gegen einen anderen Agenten zu gewinnen.
+
+Du darfst nur Entscheidungen vorschlagen. Der Server prueft spaeter, ob sie gueltig sind.
+
+Prioritaeten:
+1. Spiele immer einen legalen Gewinnzug, wenn du dadurch sofort gewinnen kannst.
+2. Wenn der Gegner nur wenige Karten hat, priorisiere Blockade: draw_two, wild_draw_four, skip oder reverse.
+3. In einem Zwei-Spieler-Spiel sind skip und reverse besonders stark, weil sie dem Gegner den Zug nehmen.
+4. Nutze Wild-Karten taktisch, um eine Farbe zu waehlen, die du selbst oft hast.
+5. Hebe Wild-Karten eher fuer kritische Situationen auf, ausser du kannst dadurch gewinnen oder den Gegner stark blockieren.
+6. Reduziere deine Handkarten, aber vermeide ungueltige Aktionen.
+7. Wenn mehrere Zahlenkarten spielbar sind, bevorzuge die Farbe, von der du danach noch weitere Karten hast.
+8. Wenn keine Karte spielbar ist, ziehe eine Karte.
+9. Gib niemals eine Aktion aus, die nicht im Kontext als erlaubt erkennbar ist.
+
+Antwortformat:
+Antworte ausschliesslich als gueltiges JSON.
+
+Schema:
+{
+  "agent_id": "daniel_agent",
+  "action": "play|draw|pass",
+  "card_index": 0,
+  "chosen_color": "red|yellow|green|blue|null",
+  "declare_uno": true,
+  "visible_reason": "kurze Begruendung fuer Menschen",
+  "confidence": 0.0
+}
+
+Regeln:
+- Keine Markdown-Ausgabe.
+- Keine Erklaerung ausserhalb des JSON.
+- visible_reason ist keine versteckte Gedankenkette, sondern nur eine kurze sichtbare Begruendung.
+- Wenn action draw oder pass ist, muss card_index null sein.
+- Wenn keine Farbe gewaehlt werden muss, ist chosen_color null.
+
+Memory:
+{
+  "agent_id": "daniel_agent",
+  "strategy_notes": [
+    "Legal moves are more important than risky moves.",
+    "When using wild cards, prefer colors that occur often in own hand.",
+    "If opponent has few cards, blocking and draw cards become more valuable.",
+    "In two-player UNO, reverse behaves like skip and can immediately deny the opponent a turn.",
+    "Use skip, reverse, draw_two, and wild_draw_four aggressively when the opponent is close to winning.",
+    "Save wild cards for winning, escaping bad colors, or blocking a nearly finished opponent.",
+    "When choosing a wild color, choose the color that appears most often in your remaining hand.",
+    "Prefer a playable number card that leaves you with more cards of the same color for future turns.",
+    "Declare UNO whenever playing down to one card if the server supports it.",
+    "Never risk an illegal wild_draw_four if the game context says the move is not playable."
+  ],
+  "invalid_move_count": 0,
+  "games_observed": 0
+}
+
+Taktische Voranalyse aus Python:
+{
+  "opponent_cards_in_hand": 7,
+  "color_counts": {
+    "red": 3,
+    "blue": 1,
+    "green": 2
+  },
+  "preferred_wild_color": "red",
+  "tactical_flags": [],
+  "ranked_playable_moves": [
+    {
+      "card_index": 3,
+      "card": {
+        "color": "green",
+        "value": "2",
+        "type": "number"
+      },
+      "score": 15,
+      "reasons": [
+        "keeps strong green color path",
+        "safe legal discard"
+      ]
+    },
+    {
+      "card_index": 4,
+      "card": {
+        "color": "green",
+        "value": "9",
+        "type": "number"
+      },
+      "score": 15,
+      "reasons": [
+        "keeps strong green color path",
+        "safe legal discard"
+      ]
+    }
+  ],
+  "fallback_action": "draw"
+}
+
+Aktueller Spielkontext:
+{
+  "agent_id": "daniel_agent",
+  "current_turn": true,
+  "top_card": {
+    "color": "green",
+    "value": "6",
+    "type": "number"
+  },
+  "hand": [
+    {
+      "color": "red",
+      "value": "0",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "1",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "draw_two",
+      "type": "action"
+    },
+    {
+      "color": "green",
+      "value": "2",
+      "type": "number"
+    },
+    {
+      "color": "green",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "5",
+      "type": "number"
+    }
+  ],
+  "playable_indexes": [
+    3,
+    4
+  ],
+  "opponent_cards_in_hand": 7,
+  "valid_colors": [
+    "red",
+    "yellow",
+    "green",
+    "blue"
+  ],
+  "allowed_actions": [
+    "play",
+    "draw"
+  ],
+  "status": "active",
+  "turn": 2,
+  "message": "Daniel-Agent played green 6. They may play again.",
+  "has_drawn_this_turn": false
+}
+
+Waehle jetzt die beste Aktion.
+Nutze die taktische Voranalyse als Hilfe, aber beachte immer den Spielkontext und das erlaubte JSON-Schema.
+
+
+===== DECISION FALLBACK =====
+HTTPError: HTTP Error 404: Not Found
+
+
+===== FALLBACK DECISION =====
+{
+  "agent_id": "daniel_agent",
+  "action": "play",
+  "card_index": 3,
+  "chosen_color": null,
+  "declare_uno": false,
+  "visible_reason": "Fallback: best ranked legal card. Reasons: keeps strong green color path, safe legal discard",
+  "confidence": 0.5
+}
+
+
+===== API ACTION =====
+{
+  "action": "play",
+  "card_index": 3,
+  "chosen_color": null,
+  "declare_uno": false
+}
+
+
+===== SERVER RESULT =====
+{
+  "game_id": "bed996e8-cb00-4052-b0b4-d3afdb6a3fca",
+  "status": "active",
+  "players": [
+    {
+      "id": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+      "name": "Ollama Agent A",
+      "cards_in_hand": 7,
+      "uno_declared": false
+    },
+    {
+      "id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+      "name": "Daniel-Agent",
+      "cards_in_hand": 5,
+      "uno_declared": false
+    }
+  ],
+  "top_card": {
+    "color": "green",
+    "value": "2",
+    "type": "number"
+  },
+  "draw_pile_count": 93,
+  "discard_pile_count": 3,
+  "current_player_id": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+  "current_player_name": "Ollama Agent A",
+  "direction": 1,
+  "winner_id": null,
+  "drawn_this_turn_player_id": null,
+  "plays_this_turn_player_id": null,
+  "plays_this_turn_count": 0,
+  "active_rule_mechanics": {
+    "max_plays_per_turn": 2,
+    "draw_count": 1,
+    "draw_two_penalty": 2,
+    "wild_draw_four_penalty": 4,
+    "skip_penalty_cards": 0,
+    "reverse_penalty_cards": 0,
+    "allow_same_type_match": false,
+    "allow_number_on_number": false,
+    "allow_action_on_action": false,
+    "win_hand_count": 0,
+    "active_rule_ids": [
+      "ollama_agent_a_two_plays"
+    ]
+  },
+  "turn": 3,
+  "message": "Daniel-Agent played green 2.",
+  "updated_at": "2026-06-19T02:20:36.465478+00:00",
+  "you": {
+    "id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+    "name": "Daniel-Agent",
+    "hand": [
+      {
+        "color": "red",
+        "value": "0",
+        "type": "number"
+      },
+      {
+        "color": "blue",
+        "value": "1",
+        "type": "number"
+      },
+      {
+        "color": "red",
+        "value": "draw_two",
+        "type": "action"
+      },
+      {
+        "color": "green",
+        "value": "9",
+        "type": "number"
+      },
+      {
+        "color": "red",
+        "value": "5",
+        "type": "number"
+      }
+    ],
+    "is_current_turn": false,
+    "has_drawn_this_turn": false,
+    "plays_this_turn_count": 0,
+    "remaining_plays_this_turn": 2
+  },
+  "playable_indexes": [
+    3
+  ]
+}
+
+
+===== RULE CONTEXT =====
+{
+  "player_id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+  "player_name": "Daniel-Agent",
+  "turn": 5,
+  "hand": [
+    {
+      "color": "red",
+      "value": "0",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "1",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "draw_two",
+      "type": "action"
+    },
+    {
+      "color": "green",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "5",
+      "type": "number"
+    }
+  ],
+  "top_card": {
+    "color": "yellow",
+    "value": "2",
+    "type": "number"
+  },
+  "playable_indexes": [],
+  "opponent_cards_in_hand": 6,
+  "mutable_rules": {
+    "version": 6,
+    "description": "Agent-created rules. These may be changed during a game.",
+    "rules": [
+      {
+        "id": "ollama_agent_a_two_plays",
+        "title": "Two Plays Per Turn",
+        "description": "Each player may play up to two cards before the turn advances.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "max_plays_per_turn": 2
+        },
+        "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+        "created_at": "2026-06-19T02:20:34.267205+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "ollama_agent_a_double_draw",
+        "title": "Double Draw",
+        "description": "Drawing from the pile now draws two cards.",
+        "type": "draw_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "draw_count": 2
+        },
+        "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+        "created_at": "2026-06-19T02:20:38.600073+00:00",
+        "modified_by": null,
+        "modified_at": null
+      }
+    ],
+    "last_removed_rule": {
+      "id": "daniel_smoke_rule",
+      "removed_by": "b728b548-9a05-42ae-8754-0b6767a099bf",
+      "removed_at": "2026-06-19T02:13:56.076988+00:00"
+    }
+  },
+  "active_rule_mechanics": {
+    "max_plays_per_turn": 2,
+    "draw_count": 2,
+    "draw_two_penalty": 2,
+    "wild_draw_four_penalty": 4,
+    "skip_penalty_cards": 0,
+    "reverse_penalty_cards": 0,
+    "allow_same_type_match": false,
+    "allow_number_on_number": false,
+    "allow_action_on_action": false,
+    "win_hand_count": 0,
+    "active_rule_ids": [
+      "ollama_agent_a_two_plays",
+      "ollama_agent_a_double_draw"
+    ]
+  },
+  "message": "Ollama Agent A changed the mutable rules."
+}
+
+
+===== MUTABLE RULE PROPOSAL =====
+{
+  "id": "daniel_low_hand_combo",
+  "title": "Daniel Low Hand Combo",
+  "description": "When Daniel-Agent is close to winning, Daniel-Agent may play up to four cards in one turn.",
+  "type": "turn_modifier",
+  "condition": {
+    "scope": "current_player",
+    "player_name": "Daniel-Agent",
+    "current_player": {
+      "hand_count": {
+        "lte": 5
+      }
+    }
+  },
+  "effect": {
+    "max_plays_per_turn": 4
+  }
+}
+
+
+===== RULE PROPOSAL =====
+{
+  "operation": "add",
+  "rule": {
+    "id": "daniel_low_hand_combo",
+    "title": "Daniel Low Hand Combo",
+    "description": "When Daniel-Agent is close to winning, Daniel-Agent may play up to four cards in one turn.",
+    "type": "turn_modifier",
+    "condition": {
+      "scope": "current_player",
+      "player_name": "Daniel-Agent",
+      "current_player": {
+        "hand_count": {
+          "lte": 5
+        }
+      }
+    },
+    "effect": {
+      "max_plays_per_turn": 4
+    }
+  },
+  "visible_reason": "Adding daniel_low_hand_combo because it uses supported effect(s): max_plays_per_turn."
+}
+
+
+===== TURN ACTION CHOICE =====
+rule
+
+
+===== RULE SERVER RESULT =====
+{
+  "version": 7,
+  "description": "Agent-created rules. These may be changed during a game.",
+  "rules": [
+    {
+      "id": "ollama_agent_a_two_plays",
+      "title": "Two Plays Per Turn",
+      "description": "Each player may play up to two cards before the turn advances.",
+      "type": "turn_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "all"
+      },
+      "effect": {
+        "max_plays_per_turn": 2
+      },
+      "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+      "created_at": "2026-06-19T02:20:34.267205+00:00",
+      "modified_by": null,
+      "modified_at": null
+    },
+    {
+      "id": "ollama_agent_a_double_draw",
+      "title": "Double Draw",
+      "description": "Drawing from the pile now draws two cards.",
+      "type": "draw_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "all"
+      },
+      "effect": {
+        "draw_count": 2
+      },
+      "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+      "created_at": "2026-06-19T02:20:38.600073+00:00",
+      "modified_by": null,
+      "modified_at": null
+    },
+    {
+      "id": "daniel_low_hand_combo",
+      "title": "Daniel Low Hand Combo",
+      "description": "When Daniel-Agent is close to winning, Daniel-Agent may play up to four cards in one turn.",
+      "type": "turn_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "current_player",
+        "player_name": "Daniel-Agent",
+        "current_player": {
+          "hand_count": {
+            "lte": 5
+          }
+        }
+      },
+      "effect": {
+        "max_plays_per_turn": 4
+      },
+      "created_by": "826393a6-75ed-4598-831d-b59d8d1494b0",
+      "created_at": "2026-06-19T02:20:39.650339+00:00",
+      "modified_by": null,
+      "modified_at": null
+    }
+  ],
+  "last_removed_rule": {
+    "id": "daniel_smoke_rule",
+    "removed_by": "b728b548-9a05-42ae-8754-0b6767a099bf",
+    "removed_at": "2026-06-19T02:13:56.076988+00:00"
+  }
+}
+
+
+===== RULE TURN RESULT =====
+{
+  "game_id": "bed996e8-cb00-4052-b0b4-d3afdb6a3fca",
+  "status": "active",
+  "players": [
+    {
+      "id": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+      "name": "Ollama Agent A",
+      "cards_in_hand": 6,
+      "uno_declared": false
+    },
+    {
+      "id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+      "name": "Daniel-Agent",
+      "cards_in_hand": 5,
+      "uno_declared": false
+    }
+  ],
+  "top_card": {
+    "color": "yellow",
+    "value": "2",
+    "type": "number"
+  },
+  "draw_pile_count": 93,
+  "discard_pile_count": 4,
+  "current_player_id": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+  "current_player_name": "Ollama Agent A",
+  "direction": 1,
+  "winner_id": null,
+  "drawn_this_turn_player_id": null,
+  "plays_this_turn_player_id": null,
+  "plays_this_turn_count": 0,
+  "active_rule_mechanics": {
+    "max_plays_per_turn": 2,
+    "draw_count": 2,
+    "draw_two_penalty": 2,
+    "wild_draw_four_penalty": 4,
+    "skip_penalty_cards": 0,
+    "reverse_penalty_cards": 0,
+    "allow_same_type_match": false,
+    "allow_number_on_number": false,
+    "allow_action_on_action": false,
+    "win_hand_count": 0,
+    "active_rule_ids": [
+      "ollama_agent_a_two_plays",
+      "ollama_agent_a_double_draw"
+    ]
+  },
+  "turn": 6,
+  "message": "Daniel-Agent changed the mutable rules.",
+  "updated_at": "2026-06-19T02:20:39.717519+00:00",
+  "you": {
+    "id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+    "name": "Daniel-Agent",
+    "hand": [
+      {
+        "color": "red",
+        "value": "0",
+        "type": "number"
+      },
+      {
+        "color": "blue",
+        "value": "1",
+        "type": "number"
+      },
+      {
+        "color": "red",
+        "value": "draw_two",
+        "type": "action"
+      },
+      {
+        "color": "green",
+        "value": "9",
+        "type": "number"
+      },
+      {
+        "color": "red",
+        "value": "5",
+        "type": "number"
+      }
+    ],
+    "is_current_turn": false,
+    "has_drawn_this_turn": false,
+    "plays_this_turn_count": 0,
+    "remaining_plays_this_turn": 2
+  },
+  "playable_indexes": []
+}
+
+
+===== RULE CONTEXT =====
+{
+  "player_id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+  "player_name": "Daniel-Agent",
+  "turn": 9,
+  "hand": [
+    {
+      "color": "red",
+      "value": "0",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "1",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "draw_two",
+      "type": "action"
+    },
+    {
+      "color": "green",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "5",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "yellow",
+      "value": "reverse",
+      "type": "action"
+    },
+    {
+      "color": "yellow",
+      "value": "6",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "2",
+      "type": "number"
+    }
+  ],
+  "top_card": {
+    "color": "blue",
+    "value": "7",
+    "type": "number"
+  },
+  "playable_indexes": [
+    1,
+    5,
+    8
+  ],
+  "opponent_cards_in_hand": 4,
+  "mutable_rules": {
+    "version": 8,
+    "description": "Agent-created rules. These may be changed during a game.",
+    "rules": [
+      {
+        "id": "ollama_agent_a_two_plays",
+        "title": "Two Plays Per Turn",
+        "description": "Each player may play up to two cards before the turn advances.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "max_plays_per_turn": 2
+        },
+        "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+        "created_at": "2026-06-19T02:20:34.267205+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "ollama_agent_a_double_draw",
+        "title": "Double Draw",
+        "description": "Drawing from the pile now draws two cards.",
+        "type": "draw_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "draw_count": 2
+        },
+        "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+        "created_at": "2026-06-19T02:20:38.600073+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "daniel_low_hand_combo",
+        "title": "Daniel Low Hand Combo",
+        "description": "When Daniel-Agent is close to winning, Daniel-Agent may play up to four cards in one turn.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "current_player",
+          "player_name": "Daniel-Agent",
+          "current_player": {
+            "hand_count": {
+              "lte": 5
+            }
+          }
+        },
+        "effect": {
+          "max_plays_per_turn": 4
+        },
+        "created_by": "826393a6-75ed-4598-831d-b59d8d1494b0",
+        "created_at": "2026-06-19T02:20:39.650339+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "ollama_agent_a_action_chain",
+        "title": "Action Chain",
+        "description": "Action cards may be played on other action cards.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "allow_action_on_action": true
+        },
+        "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+        "created_at": "2026-06-19T02:20:43.950580+00:00",
+        "modified_by": null,
+        "modified_at": null
+      }
+    ],
+    "last_removed_rule": {
+      "id": "daniel_smoke_rule",
+      "removed_by": "b728b548-9a05-42ae-8754-0b6767a099bf",
+      "removed_at": "2026-06-19T02:13:56.076988+00:00"
+    }
+  },
+  "active_rule_mechanics": {
+    "max_plays_per_turn": 2,
+    "draw_count": 2,
+    "draw_two_penalty": 2,
+    "wild_draw_four_penalty": 4,
+    "skip_penalty_cards": 0,
+    "reverse_penalty_cards": 0,
+    "allow_same_type_match": false,
+    "allow_number_on_number": false,
+    "allow_action_on_action": true,
+    "win_hand_count": 0,
+    "active_rule_ids": [
+      "ollama_agent_a_two_plays",
+      "ollama_agent_a_double_draw",
+      "ollama_agent_a_action_chain"
+    ]
+  },
+  "message": "Ollama Agent A changed the mutable rules."
+}
+
+
+===== MUTABLE RULE PROPOSAL =====
+{
+  "operation": "none",
+  "rule": null,
+  "visible_reason": "No useful non-duplicate mutable rule available."
+}
+
+
+===== RULE PROPOSAL =====
+{
+  "operation": "none",
+  "rule": null,
+  "visible_reason": "No useful non-duplicate mutable rule available."
+}
+
+
+===== TURN ACTION CHOICE =====
+game
+
+
+===== GAME CONTEXT =====
+{
+  "agent_id": "daniel_agent",
+  "current_turn": true,
+  "top_card": {
+    "color": "blue",
+    "value": "7",
+    "type": "number"
+  },
+  "hand": [
+    {
+      "color": "red",
+      "value": "0",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "1",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "draw_two",
+      "type": "action"
+    },
+    {
+      "color": "green",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "5",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "yellow",
+      "value": "reverse",
+      "type": "action"
+    },
+    {
+      "color": "yellow",
+      "value": "6",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "2",
+      "type": "number"
+    }
+  ],
+  "playable_indexes": [
+    1,
+    5,
+    8
+  ],
+  "opponent_cards_in_hand": 4,
+  "valid_colors": [
+    "red",
+    "yellow",
+    "green",
+    "blue"
+  ],
+  "allowed_actions": [
+    "play",
+    "draw"
+  ],
+  "status": "active",
+  "turn": 9,
+  "message": "Ollama Agent A changed the mutable rules.",
+  "has_drawn_this_turn": false
+}
+
+
+===== MEMORY =====
+{
+  "agent_id": "daniel_agent",
+  "strategy_notes": [
+    "Legal moves are more important than risky moves.",
+    "When using wild cards, prefer colors that occur often in own hand.",
+    "If opponent has few cards, blocking and draw cards become more valuable.",
+    "In two-player UNO, reverse behaves like skip and can immediately deny the opponent a turn.",
+    "Use skip, reverse, draw_two, and wild_draw_four aggressively when the opponent is close to winning.",
+    "Save wild cards for winning, escaping bad colors, or blocking a nearly finished opponent.",
+    "When choosing a wild color, choose the color that appears most often in your remaining hand.",
+    "Prefer a playable number card that leaves you with more cards of the same color for future turns.",
+    "Declare UNO whenever playing down to one card if the server supports it.",
+    "Never risk an illegal wild_draw_four if the game context says the move is not playable."
+  ],
+  "invalid_move_count": 0,
+  "games_observed": 0
+}
+
+
+===== TACTICAL ANALYSIS =====
+{
+  "opponent_cards_in_hand": 4,
+  "color_counts": {
+    "red": 3,
+    "blue": 3,
+    "green": 1,
+    "yellow": 2
+  },
+  "preferred_wild_color": "red",
+  "tactical_flags": [],
+  "ranked_playable_moves": [
+    {
+      "card_index": 1,
+      "card": {
+        "color": "blue",
+        "value": "1",
+        "type": "number"
+      },
+      "score": 16,
+      "reasons": [
+        "keeps strong blue color path",
+        "safe legal discard"
+      ]
+    },
+    {
+      "card_index": 5,
+      "card": {
+        "color": "blue",
+        "value": "9",
+        "type": "number"
+      },
+      "score": 16,
+      "reasons": [
+        "keeps strong blue color path",
+        "safe legal discard"
+      ]
+    },
+    {
+      "card_index": 8,
+      "card": {
+        "color": "blue",
+        "value": "2",
+        "type": "number"
+      },
+      "score": 16,
+      "reasons": [
+        "keeps strong blue color path",
+        "safe legal discard"
+      ]
+    }
+  ],
+  "fallback_action": "draw"
+}
+
+
+===== PROMPT SENT TO OLLAMA =====
+Du bist Daniel-Agent, ein kompetitiver UNO-Agent.
+Dein Ziel ist es, moeglichst viele Spiele gegen einen anderen Agenten zu gewinnen.
+
+Du darfst nur Entscheidungen vorschlagen. Der Server prueft spaeter, ob sie gueltig sind.
+
+Prioritaeten:
+1. Spiele immer einen legalen Gewinnzug, wenn du dadurch sofort gewinnen kannst.
+2. Wenn der Gegner nur wenige Karten hat, priorisiere Blockade: draw_two, wild_draw_four, skip oder reverse.
+3. In einem Zwei-Spieler-Spiel sind skip und reverse besonders stark, weil sie dem Gegner den Zug nehmen.
+4. Nutze Wild-Karten taktisch, um eine Farbe zu waehlen, die du selbst oft hast.
+5. Hebe Wild-Karten eher fuer kritische Situationen auf, ausser du kannst dadurch gewinnen oder den Gegner stark blockieren.
+6. Reduziere deine Handkarten, aber vermeide ungueltige Aktionen.
+7. Wenn mehrere Zahlenkarten spielbar sind, bevorzuge die Farbe, von der du danach noch weitere Karten hast.
+8. Wenn keine Karte spielbar ist, ziehe eine Karte.
+9. Gib niemals eine Aktion aus, die nicht im Kontext als erlaubt erkennbar ist.
+
+Antwortformat:
+Antworte ausschliesslich als gueltiges JSON.
+
+Schema:
+{
+  "agent_id": "daniel_agent",
+  "action": "play|draw|pass",
+  "card_index": 0,
+  "chosen_color": "red|yellow|green|blue|null",
+  "declare_uno": true,
+  "visible_reason": "kurze Begruendung fuer Menschen",
+  "confidence": 0.0
+}
+
+Regeln:
+- Keine Markdown-Ausgabe.
+- Keine Erklaerung ausserhalb des JSON.
+- visible_reason ist keine versteckte Gedankenkette, sondern nur eine kurze sichtbare Begruendung.
+- Wenn action draw oder pass ist, muss card_index null sein.
+- Wenn keine Farbe gewaehlt werden muss, ist chosen_color null.
+
+Memory:
+{
+  "agent_id": "daniel_agent",
+  "strategy_notes": [
+    "Legal moves are more important than risky moves.",
+    "When using wild cards, prefer colors that occur often in own hand.",
+    "If opponent has few cards, blocking and draw cards become more valuable.",
+    "In two-player UNO, reverse behaves like skip and can immediately deny the opponent a turn.",
+    "Use skip, reverse, draw_two, and wild_draw_four aggressively when the opponent is close to winning.",
+    "Save wild cards for winning, escaping bad colors, or blocking a nearly finished opponent.",
+    "When choosing a wild color, choose the color that appears most often in your remaining hand.",
+    "Prefer a playable number card that leaves you with more cards of the same color for future turns.",
+    "Declare UNO whenever playing down to one card if the server supports it.",
+    "Never risk an illegal wild_draw_four if the game context says the move is not playable."
+  ],
+  "invalid_move_count": 0,
+  "games_observed": 0
+}
+
+Taktische Voranalyse aus Python:
+{
+  "opponent_cards_in_hand": 4,
+  "color_counts": {
+    "red": 3,
+    "blue": 3,
+    "green": 1,
+    "yellow": 2
+  },
+  "preferred_wild_color": "red",
+  "tactical_flags": [],
+  "ranked_playable_moves": [
+    {
+      "card_index": 1,
+      "card": {
+        "color": "blue",
+        "value": "1",
+        "type": "number"
+      },
+      "score": 16,
+      "reasons": [
+        "keeps strong blue color path",
+        "safe legal discard"
+      ]
+    },
+    {
+      "card_index": 5,
+      "card": {
+        "color": "blue",
+        "value": "9",
+        "type": "number"
+      },
+      "score": 16,
+      "reasons": [
+        "keeps strong blue color path",
+        "safe legal discard"
+      ]
+    },
+    {
+      "card_index": 8,
+      "card": {
+        "color": "blue",
+        "value": "2",
+        "type": "number"
+      },
+      "score": 16,
+      "reasons": [
+        "keeps strong blue color path",
+        "safe legal discard"
+      ]
+    }
+  ],
+  "fallback_action": "draw"
+}
+
+Aktueller Spielkontext:
+{
+  "agent_id": "daniel_agent",
+  "current_turn": true,
+  "top_card": {
+    "color": "blue",
+    "value": "7",
+    "type": "number"
+  },
+  "hand": [
+    {
+      "color": "red",
+      "value": "0",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "1",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "draw_two",
+      "type": "action"
+    },
+    {
+      "color": "green",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "5",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "yellow",
+      "value": "reverse",
+      "type": "action"
+    },
+    {
+      "color": "yellow",
+      "value": "6",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "2",
+      "type": "number"
+    }
+  ],
+  "playable_indexes": [
+    1,
+    5,
+    8
+  ],
+  "opponent_cards_in_hand": 4,
+  "valid_colors": [
+    "red",
+    "yellow",
+    "green",
+    "blue"
+  ],
+  "allowed_actions": [
+    "play",
+    "draw"
+  ],
+  "status": "active",
+  "turn": 9,
+  "message": "Ollama Agent A changed the mutable rules.",
+  "has_drawn_this_turn": false
+}
+
+Waehle jetzt die beste Aktion.
+Nutze die taktische Voranalyse als Hilfe, aber beachte immer den Spielkontext und das erlaubte JSON-Schema.
+
+
+===== DECISION FALLBACK =====
+HTTPError: HTTP Error 404: Not Found
+
+
+===== FALLBACK DECISION =====
+{
+  "agent_id": "daniel_agent",
+  "action": "play",
+  "card_index": 1,
+  "chosen_color": null,
+  "declare_uno": false,
+  "visible_reason": "Fallback: best ranked legal card. Reasons: keeps strong blue color path, safe legal discard",
+  "confidence": 0.5
+}
+
+
+===== API ACTION =====
+{
+  "action": "play",
+  "card_index": 1,
+  "chosen_color": null,
+  "declare_uno": false
+}
+
+
+===== SERVER RESULT =====
+{
+  "game_id": "bed996e8-cb00-4052-b0b4-d3afdb6a3fca",
+  "status": "active",
+  "players": [
+    {
+      "id": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+      "name": "Ollama Agent A",
+      "cards_in_hand": 4,
+      "uno_declared": false
+    },
+    {
+      "id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+      "name": "Daniel-Agent",
+      "cards_in_hand": 8,
+      "uno_declared": false
+    }
+  ],
+  "top_card": {
+    "color": "blue",
+    "value": "1",
+    "type": "number"
+  },
+  "draw_pile_count": 89,
+  "discard_pile_count": 7,
+  "current_player_id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+  "current_player_name": "Daniel-Agent",
+  "direction": 1,
+  "winner_id": null,
+  "drawn_this_turn_player_id": null,
+  "plays_this_turn_player_id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+  "plays_this_turn_count": 1,
+  "active_rule_mechanics": {
+    "max_plays_per_turn": 2,
+    "draw_count": 2,
+    "draw_two_penalty": 2,
+    "wild_draw_four_penalty": 4,
+    "skip_penalty_cards": 0,
+    "reverse_penalty_cards": 0,
+    "allow_same_type_match": false,
+    "allow_number_on_number": false,
+    "allow_action_on_action": true,
+    "win_hand_count": 0,
+    "active_rule_ids": [
+      "ollama_agent_a_two_plays",
+      "ollama_agent_a_double_draw",
+      "ollama_agent_a_action_chain"
+    ]
+  },
+  "turn": 10,
+  "message": "Daniel-Agent played blue 1. They may play again.",
+  "updated_at": "2026-06-19T02:20:44.888172+00:00",
+  "you": {
+    "id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+    "name": "Daniel-Agent",
+    "hand": [
+      {
+        "color": "red",
+        "value": "0",
+        "type": "number"
+      },
+      {
+        "color": "red",
+        "value": "draw_two",
+        "type": "action"
+      },
+      {
+        "color": "green",
+        "value": "9",
+        "type": "number"
+      },
+      {
+        "color": "red",
+        "value": "5",
+        "type": "number"
+      },
+      {
+        "color": "blue",
+        "value": "9",
+        "type": "number"
+      },
+      {
+        "color": "yellow",
+        "value": "reverse",
+        "type": "action"
+      },
+      {
+        "color": "yellow",
+        "value": "6",
+        "type": "number"
+      },
+      {
+        "color": "blue",
+        "value": "2",
+        "type": "number"
+      }
+    ],
+    "is_current_turn": true,
+    "has_drawn_this_turn": false,
+    "plays_this_turn_count": 1,
+    "remaining_plays_this_turn": 1
+  },
+  "playable_indexes": [
+    4,
+    7
+  ]
+}
+
+
+===== RULE CONTEXT =====
+{
+  "player_id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+  "player_name": "Daniel-Agent",
+  "turn": 10,
+  "hand": [
+    {
+      "color": "red",
+      "value": "0",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "draw_two",
+      "type": "action"
+    },
+    {
+      "color": "green",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "5",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "yellow",
+      "value": "reverse",
+      "type": "action"
+    },
+    {
+      "color": "yellow",
+      "value": "6",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "2",
+      "type": "number"
+    }
+  ],
+  "top_card": {
+    "color": "blue",
+    "value": "1",
+    "type": "number"
+  },
+  "playable_indexes": [
+    4,
+    7
+  ],
+  "opponent_cards_in_hand": 4,
+  "mutable_rules": {
+    "version": 8,
+    "description": "Agent-created rules. These may be changed during a game.",
+    "rules": [
+      {
+        "id": "ollama_agent_a_two_plays",
+        "title": "Two Plays Per Turn",
+        "description": "Each player may play up to two cards before the turn advances.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "max_plays_per_turn": 2
+        },
+        "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+        "created_at": "2026-06-19T02:20:34.267205+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "ollama_agent_a_double_draw",
+        "title": "Double Draw",
+        "description": "Drawing from the pile now draws two cards.",
+        "type": "draw_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "draw_count": 2
+        },
+        "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+        "created_at": "2026-06-19T02:20:38.600073+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "daniel_low_hand_combo",
+        "title": "Daniel Low Hand Combo",
+        "description": "When Daniel-Agent is close to winning, Daniel-Agent may play up to four cards in one turn.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "current_player",
+          "player_name": "Daniel-Agent",
+          "current_player": {
+            "hand_count": {
+              "lte": 5
+            }
+          }
+        },
+        "effect": {
+          "max_plays_per_turn": 4
+        },
+        "created_by": "826393a6-75ed-4598-831d-b59d8d1494b0",
+        "created_at": "2026-06-19T02:20:39.650339+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "ollama_agent_a_action_chain",
+        "title": "Action Chain",
+        "description": "Action cards may be played on other action cards.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "allow_action_on_action": true
+        },
+        "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+        "created_at": "2026-06-19T02:20:43.950580+00:00",
+        "modified_by": null,
+        "modified_at": null
+      }
+    ],
+    "last_removed_rule": {
+      "id": "daniel_smoke_rule",
+      "removed_by": "b728b548-9a05-42ae-8754-0b6767a099bf",
+      "removed_at": "2026-06-19T02:13:56.076988+00:00"
+    }
+  },
+  "active_rule_mechanics": {
+    "max_plays_per_turn": 2,
+    "draw_count": 2,
+    "draw_two_penalty": 2,
+    "wild_draw_four_penalty": 4,
+    "skip_penalty_cards": 0,
+    "reverse_penalty_cards": 0,
+    "allow_same_type_match": false,
+    "allow_number_on_number": false,
+    "allow_action_on_action": true,
+    "win_hand_count": 0,
+    "active_rule_ids": [
+      "ollama_agent_a_two_plays",
+      "ollama_agent_a_double_draw",
+      "ollama_agent_a_action_chain"
+    ]
+  },
+  "message": "Daniel-Agent played blue 1. They may play again."
+}
+
+
+===== MUTABLE RULE PROPOSAL =====
+{
+  "operation": "none",
+  "rule": null,
+  "visible_reason": "No useful non-duplicate mutable rule available."
+}
+
+
+===== RULE PROPOSAL =====
+{
+  "operation": "none",
+  "rule": null,
+  "visible_reason": "No useful non-duplicate mutable rule available."
+}
+
+
+===== TURN ACTION CHOICE =====
+game
+
+
+===== GAME CONTEXT =====
+{
+  "agent_id": "daniel_agent",
+  "current_turn": true,
+  "top_card": {
+    "color": "blue",
+    "value": "1",
+    "type": "number"
+  },
+  "hand": [
+    {
+      "color": "red",
+      "value": "0",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "draw_two",
+      "type": "action"
+    },
+    {
+      "color": "green",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "5",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "yellow",
+      "value": "reverse",
+      "type": "action"
+    },
+    {
+      "color": "yellow",
+      "value": "6",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "2",
+      "type": "number"
+    }
+  ],
+  "playable_indexes": [
+    4,
+    7
+  ],
+  "opponent_cards_in_hand": 4,
+  "valid_colors": [
+    "red",
+    "yellow",
+    "green",
+    "blue"
+  ],
+  "allowed_actions": [
+    "play",
+    "draw"
+  ],
+  "status": "active",
+  "turn": 10,
+  "message": "Daniel-Agent played blue 1. They may play again.",
+  "has_drawn_this_turn": false
+}
+
+
+===== MEMORY =====
+{
+  "agent_id": "daniel_agent",
+  "strategy_notes": [
+    "Legal moves are more important than risky moves.",
+    "When using wild cards, prefer colors that occur often in own hand.",
+    "If opponent has few cards, blocking and draw cards become more valuable.",
+    "In two-player UNO, reverse behaves like skip and can immediately deny the opponent a turn.",
+    "Use skip, reverse, draw_two, and wild_draw_four aggressively when the opponent is close to winning.",
+    "Save wild cards for winning, escaping bad colors, or blocking a nearly finished opponent.",
+    "When choosing a wild color, choose the color that appears most often in your remaining hand.",
+    "Prefer a playable number card that leaves you with more cards of the same color for future turns.",
+    "Declare UNO whenever playing down to one card if the server supports it.",
+    "Never risk an illegal wild_draw_four if the game context says the move is not playable."
+  ],
+  "invalid_move_count": 0,
+  "games_observed": 0
+}
+
+
+===== TACTICAL ANALYSIS =====
+{
+  "opponent_cards_in_hand": 4,
+  "color_counts": {
+    "red": 3,
+    "green": 1,
+    "blue": 2,
+    "yellow": 2
+  },
+  "preferred_wild_color": "red",
+  "tactical_flags": [],
+  "ranked_playable_moves": [
+    {
+      "card_index": 4,
+      "card": {
+        "color": "blue",
+        "value": "9",
+        "type": "number"
+      },
+      "score": 15,
+      "reasons": [
+        "keeps strong blue color path",
+        "safe legal discard"
+      ]
+    },
+    {
+      "card_index": 7,
+      "card": {
+        "color": "blue",
+        "value": "2",
+        "type": "number"
+      },
+      "score": 15,
+      "reasons": [
+        "keeps strong blue color path",
+        "safe legal discard"
+      ]
+    }
+  ],
+  "fallback_action": "draw"
+}
+
+
+===== PROMPT SENT TO OLLAMA =====
+Du bist Daniel-Agent, ein kompetitiver UNO-Agent.
+Dein Ziel ist es, moeglichst viele Spiele gegen einen anderen Agenten zu gewinnen.
+
+Du darfst nur Entscheidungen vorschlagen. Der Server prueft spaeter, ob sie gueltig sind.
+
+Prioritaeten:
+1. Spiele immer einen legalen Gewinnzug, wenn du dadurch sofort gewinnen kannst.
+2. Wenn der Gegner nur wenige Karten hat, priorisiere Blockade: draw_two, wild_draw_four, skip oder reverse.
+3. In einem Zwei-Spieler-Spiel sind skip und reverse besonders stark, weil sie dem Gegner den Zug nehmen.
+4. Nutze Wild-Karten taktisch, um eine Farbe zu waehlen, die du selbst oft hast.
+5. Hebe Wild-Karten eher fuer kritische Situationen auf, ausser du kannst dadurch gewinnen oder den Gegner stark blockieren.
+6. Reduziere deine Handkarten, aber vermeide ungueltige Aktionen.
+7. Wenn mehrere Zahlenkarten spielbar sind, bevorzuge die Farbe, von der du danach noch weitere Karten hast.
+8. Wenn keine Karte spielbar ist, ziehe eine Karte.
+9. Gib niemals eine Aktion aus, die nicht im Kontext als erlaubt erkennbar ist.
+
+Antwortformat:
+Antworte ausschliesslich als gueltiges JSON.
+
+Schema:
+{
+  "agent_id": "daniel_agent",
+  "action": "play|draw|pass",
+  "card_index": 0,
+  "chosen_color": "red|yellow|green|blue|null",
+  "declare_uno": true,
+  "visible_reason": "kurze Begruendung fuer Menschen",
+  "confidence": 0.0
+}
+
+Regeln:
+- Keine Markdown-Ausgabe.
+- Keine Erklaerung ausserhalb des JSON.
+- visible_reason ist keine versteckte Gedankenkette, sondern nur eine kurze sichtbare Begruendung.
+- Wenn action draw oder pass ist, muss card_index null sein.
+- Wenn keine Farbe gewaehlt werden muss, ist chosen_color null.
+
+Memory:
+{
+  "agent_id": "daniel_agent",
+  "strategy_notes": [
+    "Legal moves are more important than risky moves.",
+    "When using wild cards, prefer colors that occur often in own hand.",
+    "If opponent has few cards, blocking and draw cards become more valuable.",
+    "In two-player UNO, reverse behaves like skip and can immediately deny the opponent a turn.",
+    "Use skip, reverse, draw_two, and wild_draw_four aggressively when the opponent is close to winning.",
+    "Save wild cards for winning, escaping bad colors, or blocking a nearly finished opponent.",
+    "When choosing a wild color, choose the color that appears most often in your remaining hand.",
+    "Prefer a playable number card that leaves you with more cards of the same color for future turns.",
+    "Declare UNO whenever playing down to one card if the server supports it.",
+    "Never risk an illegal wild_draw_four if the game context says the move is not playable."
+  ],
+  "invalid_move_count": 0,
+  "games_observed": 0
+}
+
+Taktische Voranalyse aus Python:
+{
+  "opponent_cards_in_hand": 4,
+  "color_counts": {
+    "red": 3,
+    "green": 1,
+    "blue": 2,
+    "yellow": 2
+  },
+  "preferred_wild_color": "red",
+  "tactical_flags": [],
+  "ranked_playable_moves": [
+    {
+      "card_index": 4,
+      "card": {
+        "color": "blue",
+        "value": "9",
+        "type": "number"
+      },
+      "score": 15,
+      "reasons": [
+        "keeps strong blue color path",
+        "safe legal discard"
+      ]
+    },
+    {
+      "card_index": 7,
+      "card": {
+        "color": "blue",
+        "value": "2",
+        "type": "number"
+      },
+      "score": 15,
+      "reasons": [
+        "keeps strong blue color path",
+        "safe legal discard"
+      ]
+    }
+  ],
+  "fallback_action": "draw"
+}
+
+Aktueller Spielkontext:
+{
+  "agent_id": "daniel_agent",
+  "current_turn": true,
+  "top_card": {
+    "color": "blue",
+    "value": "1",
+    "type": "number"
+  },
+  "hand": [
+    {
+      "color": "red",
+      "value": "0",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "draw_two",
+      "type": "action"
+    },
+    {
+      "color": "green",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "5",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "yellow",
+      "value": "reverse",
+      "type": "action"
+    },
+    {
+      "color": "yellow",
+      "value": "6",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "2",
+      "type": "number"
+    }
+  ],
+  "playable_indexes": [
+    4,
+    7
+  ],
+  "opponent_cards_in_hand": 4,
+  "valid_colors": [
+    "red",
+    "yellow",
+    "green",
+    "blue"
+  ],
+  "allowed_actions": [
+    "play",
+    "draw"
+  ],
+  "status": "active",
+  "turn": 10,
+  "message": "Daniel-Agent played blue 1. They may play again.",
+  "has_drawn_this_turn": false
+}
+
+Waehle jetzt die beste Aktion.
+Nutze die taktische Voranalyse als Hilfe, aber beachte immer den Spielkontext und das erlaubte JSON-Schema.
+
+
+===== DECISION FALLBACK =====
+HTTPError: HTTP Error 404: Not Found
+
+
+===== FALLBACK DECISION =====
+{
+  "agent_id": "daniel_agent",
+  "action": "play",
+  "card_index": 4,
+  "chosen_color": null,
+  "declare_uno": false,
+  "visible_reason": "Fallback: best ranked legal card. Reasons: keeps strong blue color path, safe legal discard",
+  "confidence": 0.5
+}
+
+
+===== API ACTION =====
+{
+  "action": "play",
+  "card_index": 4,
+  "chosen_color": null,
+  "declare_uno": false
+}
+
+
+===== SERVER RESULT =====
+{
+  "game_id": "bed996e8-cb00-4052-b0b4-d3afdb6a3fca",
+  "status": "active",
+  "players": [
+    {
+      "id": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+      "name": "Ollama Agent A",
+      "cards_in_hand": 4,
+      "uno_declared": false
+    },
+    {
+      "id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+      "name": "Daniel-Agent",
+      "cards_in_hand": 7,
+      "uno_declared": false
+    }
+  ],
+  "top_card": {
+    "color": "blue",
+    "value": "9",
+    "type": "number"
+  },
+  "draw_pile_count": 89,
+  "discard_pile_count": 8,
+  "current_player_id": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+  "current_player_name": "Ollama Agent A",
+  "direction": 1,
+  "winner_id": null,
+  "drawn_this_turn_player_id": null,
+  "plays_this_turn_player_id": null,
+  "plays_this_turn_count": 0,
+  "active_rule_mechanics": {
+    "max_plays_per_turn": 2,
+    "draw_count": 2,
+    "draw_two_penalty": 2,
+    "wild_draw_four_penalty": 4,
+    "skip_penalty_cards": 0,
+    "reverse_penalty_cards": 0,
+    "allow_same_type_match": false,
+    "allow_number_on_number": false,
+    "allow_action_on_action": true,
+    "win_hand_count": 0,
+    "active_rule_ids": [
+      "ollama_agent_a_two_plays",
+      "ollama_agent_a_double_draw",
+      "ollama_agent_a_action_chain"
+    ]
+  },
+  "turn": 11,
+  "message": "Daniel-Agent played blue 9.",
+  "updated_at": "2026-06-19T02:20:46.140340+00:00",
+  "you": {
+    "id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+    "name": "Daniel-Agent",
+    "hand": [
+      {
+        "color": "red",
+        "value": "0",
+        "type": "number"
+      },
+      {
+        "color": "red",
+        "value": "draw_two",
+        "type": "action"
+      },
+      {
+        "color": "green",
+        "value": "9",
+        "type": "number"
+      },
+      {
+        "color": "red",
+        "value": "5",
+        "type": "number"
+      },
+      {
+        "color": "yellow",
+        "value": "reverse",
+        "type": "action"
+      },
+      {
+        "color": "yellow",
+        "value": "6",
+        "type": "number"
+      },
+      {
+        "color": "blue",
+        "value": "2",
+        "type": "number"
+      }
+    ],
+    "is_current_turn": false,
+    "has_drawn_this_turn": false,
+    "plays_this_turn_count": 0,
+    "remaining_plays_this_turn": 2
+  },
+  "playable_indexes": [
+    2,
+    6
+  ]
+}
+
+
+===== RULE CONTEXT =====
+{
+  "player_id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+  "player_name": "Daniel-Agent",
+  "turn": 13,
+  "hand": [
+    {
+      "color": "red",
+      "value": "0",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "draw_two",
+      "type": "action"
+    },
+    {
+      "color": "green",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "5",
+      "type": "number"
+    },
+    {
+      "color": "yellow",
+      "value": "reverse",
+      "type": "action"
+    },
+    {
+      "color": "yellow",
+      "value": "6",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "2",
+      "type": "number"
+    }
+  ],
+  "top_card": {
+    "color": "blue",
+    "value": "reverse",
+    "type": "action"
+  },
+  "playable_indexes": [
+    1,
+    4,
+    6
+  ],
+  "opponent_cards_in_hand": 3,
+  "mutable_rules": {
+    "version": 9,
+    "description": "Agent-created rules. These may be changed during a game.",
+    "rules": [
+      {
+        "id": "ollama_agent_a_two_plays",
+        "title": "Two Plays Per Turn",
+        "description": "Each player may play up to two cards before the turn advances.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "max_plays_per_turn": 2
+        },
+        "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+        "created_at": "2026-06-19T02:20:34.267205+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "ollama_agent_a_double_draw",
+        "title": "Double Draw",
+        "description": "Drawing from the pile now draws two cards.",
+        "type": "draw_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "draw_count": 2
+        },
+        "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+        "created_at": "2026-06-19T02:20:38.600073+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "daniel_low_hand_combo",
+        "title": "Daniel Low Hand Combo",
+        "description": "When Daniel-Agent is close to winning, Daniel-Agent may play up to four cards in one turn.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "current_player",
+          "player_name": "Daniel-Agent",
+          "current_player": {
+            "hand_count": {
+              "lte": 5
+            }
+          }
+        },
+        "effect": {
+          "max_plays_per_turn": 4
+        },
+        "created_by": "826393a6-75ed-4598-831d-b59d8d1494b0",
+        "created_at": "2026-06-19T02:20:39.650339+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "ollama_agent_a_action_chain",
+        "title": "Action Chain",
+        "description": "Action cards may be played on other action cards.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "allow_action_on_action": true
+        },
+        "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+        "created_at": "2026-06-19T02:20:43.950580+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "ollama_agent_a_number_freedom",
+        "title": "Number Freedom",
+        "description": "Number cards may be played on any other number card.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "allow_number_on_number": true
+        },
+        "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+        "created_at": "2026-06-19T02:20:48.314690+00:00",
+        "modified_by": null,
+        "modified_at": null
+      }
+    ],
+    "last_removed_rule": {
+      "id": "daniel_smoke_rule",
+      "removed_by": "b728b548-9a05-42ae-8754-0b6767a099bf",
+      "removed_at": "2026-06-19T02:13:56.076988+00:00"
+    }
+  },
+  "active_rule_mechanics": {
+    "max_plays_per_turn": 2,
+    "draw_count": 2,
+    "draw_two_penalty": 2,
+    "wild_draw_four_penalty": 4,
+    "skip_penalty_cards": 0,
+    "reverse_penalty_cards": 0,
+    "allow_same_type_match": false,
+    "allow_number_on_number": true,
+    "allow_action_on_action": true,
+    "win_hand_count": 0,
+    "active_rule_ids": [
+      "ollama_agent_a_two_plays",
+      "ollama_agent_a_double_draw",
+      "ollama_agent_a_action_chain",
+      "ollama_agent_a_number_freedom"
+    ]
+  },
+  "message": "Ollama Agent A changed the mutable rules."
+}
+
+
+===== MUTABLE RULE PROPOSAL =====
+{
+  "id": "daniel_action_freedom",
+  "title": "Daniel Action Freedom",
+  "description": "Daniel-Agent may play any action card on another action card.",
+  "type": "turn_modifier",
+  "condition": {
+    "scope": "current_player",
+    "player_name": "Daniel-Agent"
+  },
+  "effect": {
+    "allow_action_on_action": true
+  }
+}
+
+
+===== RULE PROPOSAL =====
+{
+  "operation": "add",
+  "rule": {
+    "id": "daniel_action_freedom",
+    "title": "Daniel Action Freedom",
+    "description": "Daniel-Agent may play any action card on another action card.",
+    "type": "turn_modifier",
+    "condition": {
+      "scope": "current_player",
+      "player_name": "Daniel-Agent"
+    },
+    "effect": {
+      "allow_action_on_action": true
+    }
+  },
+  "visible_reason": "Adding daniel_action_freedom because it uses supported effect(s): allow_action_on_action."
+}
+
+
+===== TURN ACTION CHOICE =====
+rule
+
+
+===== RULE SERVER RESULT =====
+{
+  "version": 10,
+  "description": "Agent-created rules. These may be changed during a game.",
+  "rules": [
+    {
+      "id": "ollama_agent_a_two_plays",
+      "title": "Two Plays Per Turn",
+      "description": "Each player may play up to two cards before the turn advances.",
+      "type": "turn_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "all"
+      },
+      "effect": {
+        "max_plays_per_turn": 2
+      },
+      "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+      "created_at": "2026-06-19T02:20:34.267205+00:00",
+      "modified_by": null,
+      "modified_at": null
+    },
+    {
+      "id": "ollama_agent_a_double_draw",
+      "title": "Double Draw",
+      "description": "Drawing from the pile now draws two cards.",
+      "type": "draw_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "all"
+      },
+      "effect": {
+        "draw_count": 2
+      },
+      "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+      "created_at": "2026-06-19T02:20:38.600073+00:00",
+      "modified_by": null,
+      "modified_at": null
+    },
+    {
+      "id": "daniel_low_hand_combo",
+      "title": "Daniel Low Hand Combo",
+      "description": "When Daniel-Agent is close to winning, Daniel-Agent may play up to four cards in one turn.",
+      "type": "turn_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "current_player",
+        "player_name": "Daniel-Agent",
+        "current_player": {
+          "hand_count": {
+            "lte": 5
+          }
+        }
+      },
+      "effect": {
+        "max_plays_per_turn": 4
+      },
+      "created_by": "826393a6-75ed-4598-831d-b59d8d1494b0",
+      "created_at": "2026-06-19T02:20:39.650339+00:00",
+      "modified_by": null,
+      "modified_at": null
+    },
+    {
+      "id": "ollama_agent_a_action_chain",
+      "title": "Action Chain",
+      "description": "Action cards may be played on other action cards.",
+      "type": "turn_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "all"
+      },
+      "effect": {
+        "allow_action_on_action": true
+      },
+      "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+      "created_at": "2026-06-19T02:20:43.950580+00:00",
+      "modified_by": null,
+      "modified_at": null
+    },
+    {
+      "id": "ollama_agent_a_number_freedom",
+      "title": "Number Freedom",
+      "description": "Number cards may be played on any other number card.",
+      "type": "turn_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "all"
+      },
+      "effect": {
+        "allow_number_on_number": true
+      },
+      "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+      "created_at": "2026-06-19T02:20:48.314690+00:00",
+      "modified_by": null,
+      "modified_at": null
+    },
+    {
+      "id": "daniel_action_freedom",
+      "title": "Daniel Action Freedom",
+      "description": "Daniel-Agent may play any action card on another action card.",
+      "type": "turn_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "current_player",
+        "player_name": "Daniel-Agent"
+      },
+      "effect": {
+        "allow_action_on_action": true
+      },
+      "created_by": "826393a6-75ed-4598-831d-b59d8d1494b0",
+      "created_at": "2026-06-19T02:20:49.371504+00:00",
+      "modified_by": null,
+      "modified_at": null
+    }
+  ],
+  "last_removed_rule": {
+    "id": "daniel_smoke_rule",
+    "removed_by": "b728b548-9a05-42ae-8754-0b6767a099bf",
+    "removed_at": "2026-06-19T02:13:56.076988+00:00"
+  }
+}
+
+
+===== RULE TURN RESULT =====
+{
+  "game_id": "bed996e8-cb00-4052-b0b4-d3afdb6a3fca",
+  "status": "active",
+  "players": [
+    {
+      "id": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+      "name": "Ollama Agent A",
+      "cards_in_hand": 3,
+      "uno_declared": false
+    },
+    {
+      "id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+      "name": "Daniel-Agent",
+      "cards_in_hand": 7,
+      "uno_declared": false
+    }
+  ],
+  "top_card": {
+    "color": "blue",
+    "value": "reverse",
+    "type": "action"
+  },
+  "draw_pile_count": 89,
+  "discard_pile_count": 9,
+  "current_player_id": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+  "current_player_name": "Ollama Agent A",
+  "direction": 1,
+  "winner_id": null,
+  "drawn_this_turn_player_id": null,
+  "plays_this_turn_player_id": null,
+  "plays_this_turn_count": 0,
+  "active_rule_mechanics": {
+    "max_plays_per_turn": 2,
+    "draw_count": 2,
+    "draw_two_penalty": 2,
+    "wild_draw_four_penalty": 4,
+    "skip_penalty_cards": 0,
+    "reverse_penalty_cards": 0,
+    "allow_same_type_match": false,
+    "allow_number_on_number": true,
+    "allow_action_on_action": true,
+    "win_hand_count": 0,
+    "active_rule_ids": [
+      "ollama_agent_a_two_plays",
+      "ollama_agent_a_double_draw",
+      "ollama_agent_a_action_chain",
+      "ollama_agent_a_number_freedom"
+    ]
+  },
+  "turn": 14,
+  "message": "Daniel-Agent changed the mutable rules.",
+  "updated_at": "2026-06-19T02:20:49.444947+00:00",
+  "you": {
+    "id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+    "name": "Daniel-Agent",
+    "hand": [
+      {
+        "color": "red",
+        "value": "0",
+        "type": "number"
+      },
+      {
+        "color": "red",
+        "value": "draw_two",
+        "type": "action"
+      },
+      {
+        "color": "green",
+        "value": "9",
+        "type": "number"
+      },
+      {
+        "color": "red",
+        "value": "5",
+        "type": "number"
+      },
+      {
+        "color": "yellow",
+        "value": "reverse",
+        "type": "action"
+      },
+      {
+        "color": "yellow",
+        "value": "6",
+        "type": "number"
+      },
+      {
+        "color": "blue",
+        "value": "2",
+        "type": "number"
+      }
+    ],
+    "is_current_turn": false,
+    "has_drawn_this_turn": false,
+    "plays_this_turn_count": 0,
+    "remaining_plays_this_turn": 2
+  },
+  "playable_indexes": [
+    1,
+    4,
+    6
+  ]
+}
+
+
+===== RULE CONTEXT =====
+{
+  "player_id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+  "player_name": "Daniel-Agent",
+  "turn": 16,
+  "hand": [
+    {
+      "color": "red",
+      "value": "0",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "draw_two",
+      "type": "action"
+    },
+    {
+      "color": "green",
+      "value": "9",
+      "type": "number"
+    },
+    {
+      "color": "red",
+      "value": "5",
+      "type": "number"
+    },
+    {
+      "color": "yellow",
+      "value": "reverse",
+      "type": "action"
+    },
+    {
+      "color": "yellow",
+      "value": "6",
+      "type": "number"
+    },
+    {
+      "color": "blue",
+      "value": "2",
+      "type": "number"
+    }
+  ],
+  "top_card": {
+    "color": "red",
+    "value": "3",
+    "type": "number"
+  },
+  "playable_indexes": [
+    0,
+    1,
+    2,
+    3,
+    5,
+    6
+  ],
+  "opponent_cards_in_hand": 1,
+  "mutable_rules": {
+    "version": 10,
+    "description": "Agent-created rules. These may be changed during a game.",
+    "rules": [
+      {
+        "id": "ollama_agent_a_two_plays",
+        "title": "Two Plays Per Turn",
+        "description": "Each player may play up to two cards before the turn advances.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "max_plays_per_turn": 2
+        },
+        "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+        "created_at": "2026-06-19T02:20:34.267205+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "ollama_agent_a_double_draw",
+        "title": "Double Draw",
+        "description": "Drawing from the pile now draws two cards.",
+        "type": "draw_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "draw_count": 2
+        },
+        "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+        "created_at": "2026-06-19T02:20:38.600073+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "daniel_low_hand_combo",
+        "title": "Daniel Low Hand Combo",
+        "description": "When Daniel-Agent is close to winning, Daniel-Agent may play up to four cards in one turn.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "current_player",
+          "player_name": "Daniel-Agent",
+          "current_player": {
+            "hand_count": {
+              "lte": 5
+            }
+          }
+        },
+        "effect": {
+          "max_plays_per_turn": 4
+        },
+        "created_by": "826393a6-75ed-4598-831d-b59d8d1494b0",
+        "created_at": "2026-06-19T02:20:39.650339+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "ollama_agent_a_action_chain",
+        "title": "Action Chain",
+        "description": "Action cards may be played on other action cards.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "allow_action_on_action": true
+        },
+        "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+        "created_at": "2026-06-19T02:20:43.950580+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "ollama_agent_a_number_freedom",
+        "title": "Number Freedom",
+        "description": "Number cards may be played on any other number card.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "all"
+        },
+        "effect": {
+          "allow_number_on_number": true
+        },
+        "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+        "created_at": "2026-06-19T02:20:48.314690+00:00",
+        "modified_by": null,
+        "modified_at": null
+      },
+      {
+        "id": "daniel_action_freedom",
+        "title": "Daniel Action Freedom",
+        "description": "Daniel-Agent may play any action card on another action card.",
+        "type": "turn_modifier",
+        "status": "active",
+        "condition": {
+          "scope": "current_player",
+          "player_name": "Daniel-Agent"
+        },
+        "effect": {
+          "allow_action_on_action": true
+        },
+        "created_by": "826393a6-75ed-4598-831d-b59d8d1494b0",
+        "created_at": "2026-06-19T02:20:49.371504+00:00",
+        "modified_by": null,
+        "modified_at": null
+      }
+    ],
+    "last_removed_rule": {
+      "id": "daniel_smoke_rule",
+      "removed_by": "b728b548-9a05-42ae-8754-0b6767a099bf",
+      "removed_at": "2026-06-19T02:13:56.076988+00:00"
+    }
+  },
+  "active_rule_mechanics": {
+    "max_plays_per_turn": 2,
+    "draw_count": 2,
+    "draw_two_penalty": 2,
+    "wild_draw_four_penalty": 4,
+    "skip_penalty_cards": 0,
+    "reverse_penalty_cards": 0,
+    "allow_same_type_match": false,
+    "allow_number_on_number": true,
+    "allow_action_on_action": true,
+    "win_hand_count": 0,
+    "active_rule_ids": [
+      "ollama_agent_a_two_plays",
+      "ollama_agent_a_double_draw",
+      "ollama_agent_a_action_chain",
+      "ollama_agent_a_number_freedom"
+    ]
+  },
+  "message": "Ollama Agent A played red 3 and declared UNO."
+}
+
+
+===== MUTABLE RULE PROPOSAL =====
+{
+  "id": "max_low_hand_draw_pressure",
+  "title": "Max Low Hand Draw Pressure",
+  "description": "When the opponent is close to winning, normal draws become heavier.",
+  "type": "draw_modifier",
+  "condition": {
+    "opponent": {
+      "hand_count": {
+        "lte": 2
+      }
+    }
+  },
+  "effect": {
+    "draw_count": 2
+  }
+}
+
+
+===== RULE PROPOSAL =====
+{
+  "operation": "add",
+  "rule": {
+    "id": "max_low_hand_draw_pressure",
+    "title": "Max Low Hand Draw Pressure",
+    "description": "When the opponent is close to winning, normal draws become heavier.",
+    "type": "draw_modifier",
+    "condition": {
+      "opponent": {
+        "hand_count": {
+          "lte": 2
+        }
+      }
+    },
+    "effect": {
+      "draw_count": 2
+    }
+  },
+  "visible_reason": "Adding max_low_hand_draw_pressure because it uses supported effect(s): draw_count."
+}
+
+
+===== TURN ACTION CHOICE =====
+rule
+
+
+===== RULE SERVER RESULT =====
+{
+  "version": 11,
+  "description": "Agent-created rules. These may be changed during a game.",
+  "rules": [
+    {
+      "id": "ollama_agent_a_two_plays",
+      "title": "Two Plays Per Turn",
+      "description": "Each player may play up to two cards before the turn advances.",
+      "type": "turn_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "all"
+      },
+      "effect": {
+        "max_plays_per_turn": 2
+      },
+      "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+      "created_at": "2026-06-19T02:20:34.267205+00:00",
+      "modified_by": null,
+      "modified_at": null
+    },
+    {
+      "id": "ollama_agent_a_double_draw",
+      "title": "Double Draw",
+      "description": "Drawing from the pile now draws two cards.",
+      "type": "draw_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "all"
+      },
+      "effect": {
+        "draw_count": 2
+      },
+      "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+      "created_at": "2026-06-19T02:20:38.600073+00:00",
+      "modified_by": null,
+      "modified_at": null
+    },
+    {
+      "id": "daniel_low_hand_combo",
+      "title": "Daniel Low Hand Combo",
+      "description": "When Daniel-Agent is close to winning, Daniel-Agent may play up to four cards in one turn.",
+      "type": "turn_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "current_player",
+        "player_name": "Daniel-Agent",
+        "current_player": {
+          "hand_count": {
+            "lte": 5
+          }
+        }
+      },
+      "effect": {
+        "max_plays_per_turn": 4
+      },
+      "created_by": "826393a6-75ed-4598-831d-b59d8d1494b0",
+      "created_at": "2026-06-19T02:20:39.650339+00:00",
+      "modified_by": null,
+      "modified_at": null
+    },
+    {
+      "id": "ollama_agent_a_action_chain",
+      "title": "Action Chain",
+      "description": "Action cards may be played on other action cards.",
+      "type": "turn_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "all"
+      },
+      "effect": {
+        "allow_action_on_action": true
+      },
+      "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+      "created_at": "2026-06-19T02:20:43.950580+00:00",
+      "modified_by": null,
+      "modified_at": null
+    },
+    {
+      "id": "ollama_agent_a_number_freedom",
+      "title": "Number Freedom",
+      "description": "Number cards may be played on any other number card.",
+      "type": "turn_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "all"
+      },
+      "effect": {
+        "allow_number_on_number": true
+      },
+      "created_by": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+      "created_at": "2026-06-19T02:20:48.314690+00:00",
+      "modified_by": null,
+      "modified_at": null
+    },
+    {
+      "id": "daniel_action_freedom",
+      "title": "Daniel Action Freedom",
+      "description": "Daniel-Agent may play any action card on another action card.",
+      "type": "turn_modifier",
+      "status": "active",
+      "condition": {
+        "scope": "current_player",
+        "player_name": "Daniel-Agent"
+      },
+      "effect": {
+        "allow_action_on_action": true
+      },
+      "created_by": "826393a6-75ed-4598-831d-b59d8d1494b0",
+      "created_at": "2026-06-19T02:20:49.371504+00:00",
+      "modified_by": null,
+      "modified_at": null
+    },
+    {
+      "id": "max_low_hand_draw_pressure",
+      "title": "Max Low Hand Draw Pressure",
+      "description": "When the opponent is close to winning, normal draws become heavier.",
+      "type": "draw_modifier",
+      "status": "active",
+      "condition": {
+        "opponent": {
+          "hand_count": {
+            "lte": 2
+          }
+        }
+      },
+      "effect": {
+        "draw_count": 2
+      },
+      "created_by": "826393a6-75ed-4598-831d-b59d8d1494b0",
+      "created_at": "2026-06-19T02:20:51.875263+00:00",
+      "modified_by": null,
+      "modified_at": null
+    }
+  ],
+  "last_removed_rule": {
+    "id": "daniel_smoke_rule",
+    "removed_by": "b728b548-9a05-42ae-8754-0b6767a099bf",
+    "removed_at": "2026-06-19T02:13:56.076988+00:00"
+  }
+}
+
+
+===== RULE TURN RESULT =====
+{
+  "game_id": "bed996e8-cb00-4052-b0b4-d3afdb6a3fca",
+  "status": "active",
+  "players": [
+    {
+      "id": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+      "name": "Ollama Agent A",
+      "cards_in_hand": 1,
+      "uno_declared": true
+    },
+    {
+      "id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+      "name": "Daniel-Agent",
+      "cards_in_hand": 7,
+      "uno_declared": false
+    }
+  ],
+  "top_card": {
+    "color": "red",
+    "value": "3",
+    "type": "number"
+  },
+  "draw_pile_count": 89,
+  "discard_pile_count": 11,
+  "current_player_id": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+  "current_player_name": "Ollama Agent A",
+  "direction": 1,
+  "winner_id": null,
+  "drawn_this_turn_player_id": null,
+  "plays_this_turn_player_id": null,
+  "plays_this_turn_count": 0,
+  "active_rule_mechanics": {
+    "max_plays_per_turn": 2,
+    "draw_count": 2,
+    "draw_two_penalty": 2,
+    "wild_draw_four_penalty": 4,
+    "skip_penalty_cards": 0,
+    "reverse_penalty_cards": 0,
+    "allow_same_type_match": false,
+    "allow_number_on_number": true,
+    "allow_action_on_action": true,
+    "win_hand_count": 0,
+    "active_rule_ids": [
+      "ollama_agent_a_two_plays",
+      "ollama_agent_a_double_draw",
+      "ollama_agent_a_action_chain",
+      "ollama_agent_a_number_freedom",
+      "max_low_hand_draw_pressure"
+    ]
+  },
+  "turn": 17,
+  "message": "Daniel-Agent changed the mutable rules.",
+  "updated_at": "2026-06-19T02:20:51.996171+00:00",
+  "you": {
+    "id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+    "name": "Daniel-Agent",
+    "hand": [
+      {
+        "color": "red",
+        "value": "0",
+        "type": "number"
+      },
+      {
+        "color": "red",
+        "value": "draw_two",
+        "type": "action"
+      },
+      {
+        "color": "green",
+        "value": "9",
+        "type": "number"
+      },
+      {
+        "color": "red",
+        "value": "5",
+        "type": "number"
+      },
+      {
+        "color": "yellow",
+        "value": "reverse",
+        "type": "action"
+      },
+      {
+        "color": "yellow",
+        "value": "6",
+        "type": "number"
+      },
+      {
+        "color": "blue",
+        "value": "2",
+        "type": "number"
+      }
+    ],
+    "is_current_turn": false,
+    "has_drawn_this_turn": false,
+    "plays_this_turn_count": 0,
+    "remaining_plays_this_turn": 2
+  },
+  "playable_indexes": [
+    0,
+    1,
+    2,
+    3,
+    5,
+    6
+  ]
+}
+
+
+===== FINAL STATE =====
+{
+  "game_id": "bed996e8-cb00-4052-b0b4-d3afdb6a3fca",
+  "status": "finished",
+  "players": [
+    {
+      "id": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+      "name": "Ollama Agent A",
+      "cards_in_hand": 0,
+      "uno_declared": false
+    },
+    {
+      "id": "826393a6-75ed-4598-831d-b59d8d1494b0",
+      "name": "Daniel-Agent",
+      "cards_in_hand": 7,
+      "uno_declared": false
+    }
+  ],
+  "top_card": {
+    "color": "green",
+    "value": "9",
+    "type": "number"
+  },
+  "draw_pile_count": 89,
+  "discard_pile_count": 12,
+  "current_player_id": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+  "current_player_name": "Ollama Agent A",
+  "direction": 1,
+  "winner_id": "d1142efb-14cb-4dc8-8f20-9f87e7d8b2d7",
+  "drawn_this_turn_player_id": null,
+  "plays_this_turn_player_id": null,
+  "plays_this_turn_count": 0,
+  "active_rule_mechanics": {
+    "max_plays_per_turn": 2,
+    "draw_count": 2,
+    "draw_two_penalty": 2,
+    "wild_draw_four_penalty": 4,
+    "skip_penalty_cards": 0,
+    "reverse_penalty_cards": 0,
+    "allow_same_type_match": false,
+    "allow_number_on_number": true,
+    "allow_action_on_action": true,
+    "win_hand_count": 0,
+    "active_rule_ids": [
+      "ollama_agent_a_two_plays",
+      "ollama_agent_a_double_draw",
+      "ollama_agent_a_action_chain",
+      "ollama_agent_a_number_freedom"
+    ]
+  },
+  "turn": 18,
+  "message": "Ollama Agent A played green 9 and won the game.",
+  "updated_at": "2026-06-19T02:20:52.166242+00:00"
+}

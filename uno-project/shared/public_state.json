@@ -1,0 +1,55 @@
+{
+  "game_id": "b01137ae-f44e-42b3-969e-55bc86acbd80",
+  "status": "finished",
+  "players": [
+    {
+      "id": "bb4ef712-c864-4da3-9069-1f8d48e27093",
+      "name": "Ollama Agent A",
+      "cards_in_hand": 5,
+      "uno_declared": false
+    },
+    {
+      "id": "1dc12016-d495-4893-a9c6-f5f2c725c156",
+      "name": "Ollama Agent B",
+      "cards_in_hand": 0,
+      "uno_declared": false
+    }
+  ],
+  "top_card": {
+    "color": "blue",
+    "value": "8",
+    "type": "number"
+  },
+  "draw_pile_count": 85,
+  "discard_pile_count": 18,
+  "current_player_id": "1dc12016-d495-4893-a9c6-f5f2c725c156",
+  "current_player_name": "Ollama Agent B",
+  "direction": 1,
+  "winner_id": "1dc12016-d495-4893-a9c6-f5f2c725c156",
+  "drawn_this_turn_player_id": null,
+  "plays_this_turn_player_id": null,
+  "plays_this_turn_count": 0,
+  "active_rule_mechanics": {
+    "max_plays_per_turn": 2,
+    "draw_count": 2,
+    "draw_two_penalty": 2,
+    "wild_draw_four_penalty": 4,
+    "skip_penalty_cards": 0,
+    "reverse_penalty_cards": 0,
+    "allow_same_type_match": false,
+    "allow_number_on_number": false,
+    "allow_action_on_action": true,
+    "win_hand_count": 0,
+    "active_rule_ids": [
+      "ollama_agent_a_two_plays",
+      "ollama_agent_a_double_draw",
+      "ollama_agent_b_two_plays",
+      "ollama_agent_b_double_draw",
+      "ollama_agent_a_action_chain",
+      "ollama_agent_b_action_chain"
+    ]
+  },
+  "turn": 23,
+  "message": "Ollama Agent B played blue 8 and won the game.",
+  "updated_at": "2026-06-20T11:20:05.665908+00:00"
+}
